@@ -5,28 +5,167 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Olha o Gás 💨 - Login</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #004aad, #00bcd4);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      width: 90%;
+      max-width: 400px;
+      padding: 35px 30px;
+      text-align: center;
+      color: white;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    .login-card h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .login-card p {
+      font-size: 0.95rem;
+      opacity: 0.85;
+      margin-bottom: 25px;
+    }
+
+    .abas-login {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .aba {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .aba:hover { background: rgba(255,255,255,0.3); }
+    .aba.ativa { background: #fff; color: #004aad; }
+
+    .form-box {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      text-align: left;
+      margin-top: 10px;
+    }
+
+    .form-box.ativo { display: flex; }
+
+    input, select {
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      font-size: 0.95rem;
+    }
+
+    input::placeholder {
+      color: #777;
+    }
+
+    button {
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.3s;
+    }
+
+    #btnEntrar, #btnCadastrar {
+      background: #fff;
+      color: #004aad;
+    }
+    #btnEntrar:hover, #btnCadastrar:hover {
+      background: #e6e6e6;
+    }
+
+    .btn-google {
+      background: #db4437;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    .btn-google:hover {
+      background: #c23321;
+    }
+
+    .btn-google img {
+      width: 22px;
+      height: 22px;
+    }
+
+    .titulo-endereco {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: white;
+      margin-top: 10px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .copy {
+      position: absolute;
+      bottom: 15px;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.7);
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Olha o Gás 🔥</h1>
+  <div class="login-card">
+    <h1>Olha o Gás 💨</h1>
+    <p>Conecte-se para fazer seus pedidos ou gerenciar entregas.</p>
 
-    <!-- Abas -->
     <div class="abas-login">
       <button id="abaEntrar" class="aba ativa">Entrar</button>
-      <button id="abaInscrever" class="aba">Inscrever-se</button>
+      <button id="abaInscrever" class="aba">Cadastrar</button>
     </div>
 
-    <!-- Formulário de login -->
+    <!-- ENTRAR -->
     <div id="formEntrar" class="form-box ativo">
       <input type="email" id="loginEmail" placeholder="E-mail">
       <input type="password" id="loginSenha" placeholder="Senha">
       <button id="btnEntrar">Entrar</button>
-      <div class="linha-ou"><span>ou</span></div>
-      <button id="btnGoogle" class="btn-google">Entrar com Google</button>
+      <button id="btnGoogle" class="btn-google">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg">
+        Entrar com Google
+      </button>
     </div>
 
-    <!-- Formulário de inscrição -->
-    <div id="formInscrever" class="form-box" style="display:none;">
+    <!-- CADASTRAR -->
+    <div id="formInscrever" class="form-box">
       <input type="text" id="cadNome" placeholder="Nome completo">
       <input type="email" id="cadEmail" placeholder="E-mail">
       <input type="password" id="cadSenha" placeholder="Senha">
@@ -41,11 +180,14 @@
       <select id="cadTipo">
         <option value="cliente">Sou Cliente</option>
         <option value="vendedor">Sou Vendedor</option>
+        <option value="gerente">Sou Gerente</option>
       </select>
 
       <button id="btnCadastrar">Criar Conta</button>
     </div>
   </div>
+
+  <p class="copy">© 2025 Olha o Gás - Sistema Integrado de Entregas</p>
 
   <script type="module" src="index.js"></script>
 </body>
