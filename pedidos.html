@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus Pedidos - Olha o Gás 💨</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #004aad, #00bcd4);
+      min-height: 100vh;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      width: 100%;
+      text-align: center;
+      padding: 20px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    main {
+      width: 100%;
+      max-width: 900px;
+      padding: 30px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .btn-voltar {
+      align-self: flex-start;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      padding: 8px 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-voltar:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .categoria {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      width: 100%;
+      padding: 15px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      animation: fadeIn 0.4s ease;
+    }
+
+    .categoria h2 {
+      margin: 0 0 15px;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pedido-card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: transform 0.3s;
+    }
+
+    .pedido-card:hover {
+      transform: translateY(-4px);
+      background: rgba(255,255,255,0.2);
+    }
+
+    .pedido-card h4 {
+      margin: 0 0 6px;
+      font-size: 1.1rem;
+      color: #fff;
+    }
+
+    .pedido-card p {
+      margin: 2px 0;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    .pedido-card strong {
+      color: #00ff99;
+    }
+
+    .status {
+      font-weight: 600;
+      margin-top: 5px;
+      border-radius: 6px;
+      display: inline-block;
+      padding: 3px 8px;
+      font-size: 0.85rem;
+    }
+
+    .status.pendente { background: #fff3cd; color: #856404; }
+    .status.em_entrega { background: #cce5ff; color: #004085; }
+    .status.entregue { background: #d4edda; color: #155724; }
+
+    .btn-detalhes {
+      background: #fff;
+      color: #004aad;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 8px;
+    }
+
+    .btn-detalhes:hover {
+      background: #e6e6e6;
+      transform: scale(1.05);
+    }
+
+    /* === Modal Detalhes === */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .modal-content {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      color: white;
+      border-radius: 16px;
+      padding: 25px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+    }
+
+    .modal-content button {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 12px;
+    }
+
+    .modal-content button:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    footer {
+      text-align: center;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.85rem;
+      margin: 30px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>📋 Meus Pedidos</header>
+
+  <main>
+    <button class="btn-voltar" onclick="window.location.href='cliente.html'">← Voltar</button>
+
+    <section class="categoria" id="pendentes">
+      <h2>🕒 Aguardando entrega</h2>
+      <div class="lista" id="listaPendentes"></div>
+    </section>
+
+    <section class="categoria" id="entrega">
+      <h2>🚚 Em entrega</h2>
+      <div class="lista" id="listaEmEntrega"></div>
+    </section>
+
+    <section class="categoria" id="entregues">
+      <h2>✅ Entregues</h2>
+      <div class="lista" id="listaEntregues"></div>
+    </section>
+  </main>
+
+  <!-- Modal de detalhes -->
+  <div class="modal" id="modalDetalhes">
+    <div class="modal-content">
+      <h3>Detalhes do Pedido</h3>
+      <div id="infoPedido"></div>
+      <button id="fecharModal">Fechar</button>
+    </div>
+  </div>
+
+  <footer>© 2025 Olha o Gás 💨 — Acompanhe seus pedidos em tempo real</footer>
+
+  <script type="module" src="pedidos.js"></script>
+</body>
+</html>
