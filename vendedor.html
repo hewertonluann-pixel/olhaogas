@@ -5,38 +5,295 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel do Vendedor - Olha o Gás 💨</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #004aad, #00bcd4);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+    }
+
+    header {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      width: 100%;
+      text-align: center;
+      padding: 20px 10px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .painel-vendedor {
+      width: 100%;
+      max-width: 1100px;
+      padding: 30px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* === Card do vendedor === */
+    #meuCard {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 20px;
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    #meuCard img {
+      width: 100%;
+      height: 160px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+
+    #meuCard h3 {
+      margin: 8px 0;
+      font-size: 1.4rem;
+    }
+
+    #btnEditarCadastro {
+      background: #00ff99;
+      color: #004aad;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    #btnEditarCadastro:hover {
+      background: #00e589;
+      transform: scale(1.05);
+    }
+
+    /* === Formulário de edição === */
+    #secaoEditar {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 25px;
+      margin-top: 20px;
+      color: white;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 500px;
+      text-align: left;
+      display: none;
+    }
+
+    #secaoEditar input, #secaoEditar label, #secaoEditar h3 {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    #secaoEditar input[type="text"], 
+    #secaoEditar input[type="number"] {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      color: white;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    #secaoEditar input[type="checkbox"] {
+      transform: scale(1.2);
+      margin-right: 8px;
+    }
+
+    #salvarInfo {
+      width: 100%;
+      background: #fff;
+      color: #004aad;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    #salvarInfo:hover {
+      background: #e6e6e6;
+      transform: scale(1.03);
+    }
+
+    /* === Status === */
+    .status-atual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .bolinha-status {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #cc0000;
+    }
+
+    #botao-status {
+      background: #fff;
+      color: #004aad;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    #botao-status:hover {
+      background: #e6e6e6;
+      transform: scale(1.05);
+    }
+
+    /* === Resumo de pedidos === */
+    .resumo-pedidos {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 30px;
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    .resumo-item {
+      display: inline-block;
+      margin: 8px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .resumo-item.pendente { background: #fff3cd; color: #856404; }
+    .resumo-item.em_entrega { background: #cce5ff; color: #004085; }
+    .resumo-item.entregue { background: #d4edda; color: #155724; }
+
+    /* === Lista de pedidos === */
+    .lista-pedidos {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 30px;
+    }
+
+    .pedido-card {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 15px;
+      color: white;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      animation: fadeIn 0.4s ease;
+    }
+
+    .pedido-card h4 {
+      margin: 5px 0 10px;
+      font-size: 1.1rem;
+    }
+
+    .pedido-card strong {
+      color: #00ff99;
+    }
+
+    .pedido-card.pendente { border-left: 5px solid #ff9900; }
+    .pedido-card.em_entrega { border-left: 5px solid #007bff; }
+    .pedido-card.entregue { border-left: 5px solid #00ff99; opacity: 0.9; }
+
+    .acoes-pedido {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-entregar, .btn-finalizar {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-entregar {
+      background: #007bff;
+      color: white;
+    }
+
+    .btn-finalizar {
+      background: #28a745;
+      color: white;
+    }
+
+    .btn-entregar:hover, .btn-finalizar:hover {
+      transform: scale(1.05);
+      opacity: 0.9;
+    }
+
+    footer {
+      text-align: center;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.85rem;
+      margin: 30px 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Painel do Vendedor</h1>
-  </header>
+  <header>🚚 Painel do Vendedor</header>
 
   <main class="painel-vendedor">
-    <!-- Card do vendedor -->
-    <section id="meuCard" class="vendedor-card ativo"></section>
+    <section id="meuCard"></section>
 
-    <!-- Botão para abrir edição -->
-    <button id="btnEditarCadastro" class="btn-editar-cadastro">Editar Cadastro</button>
+    <button id="btnEditarCadastro">Editar Cadastro</button>
 
-    <!-- Edição de informações -->
-    <section id="secaoEditar" class="form-foto" style="display:none;">
+    <section id="secaoEditar">
       <h2>Editar informações</h2>
 
       <h3>Produto: Gás 13 kg</h3>
-      <input type="text" id="marcaGas" placeholder="Marca do gás (ex: Ultragaz)">
-      <input type="number" id="precoGas" placeholder="Preço do gás 13kg (R$)">
-      <label><input type="checkbox" id="vendeGas" checked> Vende gás</label>
+      <input type="text" id="marcaGas" placeholder="Marca do gás">
+      <input type="number" id="precoGas" placeholder="Preço (R$)">
+      <label><input type="checkbox" id="vendeGas"> Vende gás</label>
 
       <h3>Produto: Água 20 L</h3>
-      <input type="text" id="marcaAgua" placeholder="Marca da água (ex: Indaiá)">
-      <input type="number" id="precoAgua" placeholder="Preço da água 20L (R$)">
-      <label><input type="checkbox" id="vendeAgua" checked> Vende água</label>
+      <input type="text" id="marcaAgua" placeholder="Marca da água">
+      <input type="number" id="precoAgua" placeholder="Preço (R$)">
+      <label><input type="checkbox" id="vendeAgua"> Vende água</label>
 
       <input type="file" id="foto" accept="image/*">
       <button id="salvarInfo">Salvar Alterações</button>
     </section>
 
-    <!-- Controle de status -->
     <div class="status-atual">
       <span class="bolinha-status"></span>
       <span id="texto-status">🔴 Fora de serviço</span>
@@ -44,7 +301,6 @@
 
     <button id="botao-status">Iniciar Entregas</button>
 
-    <!-- Resumo de pedidos -->
     <section class="resumo-pedidos">
       <h2>Resumo de Pedidos</h2>
       <div id="painelResumo">
@@ -54,12 +310,13 @@
       </div>
     </section>
 
-    <!-- Lista de pedidos -->
     <section class="lista-pedidos">
       <h2>Pedidos Recebidos</h2>
       <div id="listaPedidos"></div>
     </section>
   </main>
+
+  <footer>© 2025 Olha o Gás 💨 — Painel do Vendedor</footer>
 
   <script type="module" src="vendedor.js"></script>
 </body>
