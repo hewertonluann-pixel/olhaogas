@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Olha o Gás 💨 - Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Olha o Gás 🔥</h1>
+
+    <!-- Abas -->
+    <div class="abas-login">
+      <button id="abaEntrar" class="aba ativa">Entrar</button>
+      <button id="abaInscrever" class="aba">Inscrever-se</button>
+    </div>
+
+    <!-- Formulário de login -->
+    <div id="formEntrar" class="form-box ativo">
+      <input type="email" id="loginEmail" placeholder="E-mail">
+      <input type="password" id="loginSenha" placeholder="Senha">
+      <button id="btnEntrar">Entrar</button>
+      <div class="linha-ou"><span>ou</span></div>
+      <button id="btnGoogle" class="btn-google">Entrar com Google</button>
+    </div>
+
+    <!-- Formulário de inscrição -->
+    <div id="formInscrever" class="form-box" style="display:none;">
+      <input type="text" id="cadNome" placeholder="Nome completo">
+      <input type="email" id="cadEmail" placeholder="E-mail">
+      <input type="password" id="cadSenha" placeholder="Senha">
+
+      <h3 class="titulo-endereco">Endereço</h3>
+      <input type="text" id="cadRua" placeholder="Rua">
+      <input type="text" id="cadNumero" placeholder="Número">
+      <input type="text" id="cadBairro" placeholder="Bairro">
+      <input type="text" id="cadCidade" placeholder="Cidade">
+      <input type="text" id="cadEstado" placeholder="Estado">
+
+      <select id="cadTipo">
+        <option value="cliente">Sou Cliente</option>
+        <option value="vendedor">Sou Vendedor</option>
+      </select>
+
+      <button id="btnCadastrar">Criar Conta</button>
+    </div>
+  </div>
+
+  <script type="module" src="index.js"></script>
+</body>
+</html>

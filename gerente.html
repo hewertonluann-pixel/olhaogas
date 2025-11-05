@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Gerente - Olha o Gás 💨</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>👨‍💼 Painel do Gerente</h1>
+  </header>
+
+  <main class="painel-gerente">
+    <!-- Cadastro -->
+    <section class="cadastro-vendedor">
+      <h2>Cadastrar novo vendedor</h2>
+      <input type="text" id="nome" placeholder="Nome do vendedor">
+      <input type="password" id="senha" placeholder="Senha">
+      <input type="text" id="marcaGas" placeholder="Marca do gás (opcional)">
+      <input type="number" id="precoGas" placeholder="Preço 13kg (opcional)">
+      <input type="file" id="foto" accept="image/*">
+      <button id="btnCadastrar">Cadastrar Vendedor</button>
+    </section>
+
+    <!-- Lista -->
+    <section class="lista-vendedores">
+      <h2>Lista de vendedores</h2>
+      <div id="listaVendedores"></div>
+    </section>
+  </main>
+
+  <script type="module" src="gerente.js"></script>
+</body>
+</html>

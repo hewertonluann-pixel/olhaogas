@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientes - Olha o Gás 💨</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Vendedores Disponíveis</h1>
+  </header>
+
+  <main id="lista-vendedores" class="lista-vendedores"></main>
+
+  <!-- Modal de pedido -->
+  <div id="modalPedido" class="modal" style="display:none;">
+    <div class="modal-content">
+      <h2>Fazer Pedido</h2>
+      <p id="nomeVendedorPedido"></p>
+
+      <div class="form-produto">
+        <label>Gás 13 kg</label>
+        <input type="number" id="qtdGas" min="0" value="0">
+        <span id="precoGasPedido"></span>
+      </div>
+
+      <div class="form-produto">
+        <label>Água 20 L</label>
+        <input type="number" id="qtdAgua" min="0" value="0">
+        <span id="precoAguaPedido"></span>
+      </div>
+
+      <p><strong>Total: R$ <span id="totalPedido">0</span></strong></p>
+      <button id="confirmarPedido">Confirmar Pedido</button>
+      <button id="fecharModal">Cancelar</button>
+    </div>
+  </div>
+
+  <script type="module" src="cliente.js"></script>
+</body>
+</html>

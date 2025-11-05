@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel do Vendedor - Olha o Gás 💨</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Painel do Vendedor</h1>
+  </header>
+
+  <main class="painel-vendedor">
+    <!-- Card do vendedor -->
+    <section id="meuCard" class="vendedor-card ativo"></section>
+
+    <!-- Botão para abrir edição -->
+    <button id="btnEditarCadastro" class="btn-editar-cadastro">Editar Cadastro</button>
+
+    <!-- Edição de informações -->
+    <section id="secaoEditar" class="form-foto" style="display:none;">
+      <h2>Editar informações</h2>
+
+      <h3>Produto: Gás 13 kg</h3>
+      <input type="text" id="marcaGas" placeholder="Marca do gás (ex: Ultragaz)">
+      <input type="number" id="precoGas" placeholder="Preço do gás 13kg (R$)">
+      <label><input type="checkbox" id="vendeGas" checked> Vende gás</label>
+
+      <h3>Produto: Água 20 L</h3>
+      <input type="text" id="marcaAgua" placeholder="Marca da água (ex: Indaiá)">
+      <input type="number" id="precoAgua" placeholder="Preço da água 20L (R$)">
+      <label><input type="checkbox" id="vendeAgua" checked> Vende água</label>
+
+      <input type="file" id="foto" accept="image/*">
+      <button id="salvarInfo">Salvar Alterações</button>
+    </section>
+
+    <!-- Controle de status -->
+    <div class="status-atual">
+      <span class="bolinha-status"></span>
+      <span id="texto-status">🔴 Fora de serviço</span>
+    </div>
+
+    <button id="botao-status">Iniciar Entregas</button>
+
+    <!-- Resumo de pedidos -->
+    <section class="resumo-pedidos">
+      <h2>Resumo de Pedidos</h2>
+      <div id="painelResumo">
+        <div class="resumo-item pendente">📦 Pendentes: <span id="qtdPendentes">0</span></div>
+        <div class="resumo-item em_entrega">🚚 Em entrega: <span id="qtdEntrega">0</span></div>
+        <div class="resumo-item entregue">✅ Entregues: <span id="qtdEntregues">0</span></div>
+      </div>
+    </section>
+
+    <!-- Lista de pedidos -->
+    <section class="lista-pedidos">
+      <h2>Pedidos Recebidos</h2>
+      <div id="listaPedidos"></div>
+    </section>
+  </main>
+
+  <script type="module" src="vendedor.js"></script>
+</body>
+</html>
