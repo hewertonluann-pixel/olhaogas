@@ -5,139 +5,204 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel do Gerente - Olha o Gás 💨</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #004aad, #00bcd4);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: white;
+    }
+
+    header {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      color: white;
+      width: 100%;
+      text-align: center;
+      padding: 20px 10px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .painel-gerente {
+      max-width: 1100px;
+      width: 100%;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* === Card de cadastro === */
+    .cadastro-vendedor {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 25px;
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      color: white;
+      margin-bottom: 40px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .cadastro-vendedor h2 {
+      margin-bottom: 15px;
+      font-size: 1.3rem;
+      color: #fff;
+    }
+
+    .cadastro-vendedor input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .cadastro-vendedor input::placeholder {
+      color: rgba(255,255,255,0.7);
+    }
+
+    #btnCadastrar {
+      width: 100%;
+      background: #00ff99;
+      color: #004aad;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    #btnCadastrar:hover {
+      background: #00e589;
+      transform: scale(1.05);
+    }
+
+    /* === Lista de vendedores === */
+    .lista-vendedores {
+      width: 100%;
+      max-width: 1000px;
+    }
+
+    .lista-vendedores h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #listaVendedores {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+    }
+
+    .vendedor-card {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 15px;
+      width: 250px;
+      text-align: center;
+      color: white;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      transition: transform 0.3s;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .vendedor-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255,255,255,0.25);
+    }
+
+    .vendedor-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .vendedor-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 6px;
+    }
+
+    .vendedor-card p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin: 3px 0;
+    }
+
+    .vendedor-card .btn-excluir {
+      margin-top: 10px;
+      background: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .vendedor-card .btn-excluir:hover {
+      background: #e63939;
+      transform: scale(1.05);
+    }
+
+    footer {
+      text-align: center;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.85rem;
+      margin: 30px 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>👨‍💼 Painel do Gerente</h1>
-  </header>
+  <header>👨‍💼 Painel do Gerente</header>
 
   <main class="painel-gerente">
-    <!-- Cadastro de vendedores -->
+    <!-- Cadastro de vendedor -->
     <section class="cadastro-vendedor">
       <h2>Cadastrar novo vendedor</h2>
       <input type="text" id="nome" placeholder="Nome do vendedor">
       <input type="password" id="senha" placeholder="Senha">
-      <input type="text" id="marca" placeholder="Marca do gás (ex: Ultragaz)">
-      <input type="number" id="preco" placeholder="Preço 13kg (R$)">
+      <input type="text" id="marcaGas" placeholder="Marca do gás (opcional)">
+      <input type="number" id="precoGas" placeholder="Preço 13kg (opcional)">
       <input type="file" id="foto" accept="image/*">
       <button id="btnCadastrar">Cadastrar Vendedor</button>
     </section>
 
     <!-- Lista de vendedores -->
     <section class="lista-vendedores">
-      <h2>Lista de vendedores</h2>
+      <h2>Lista de Vendedores</h2>
       <div id="listaVendedores"></div>
-    </section>
-
-    <!-- NOVA SEÇÃO: Lista de clientes -->
-    <section class="lista-vendedores">
-      <h2>Lista de clientes</h2>
-      <div id="listaClientes"></div>
     </section>
   </main>
 
-  <script>
-    // Recupera usuários
-    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+  <footer>© 2025 Olha o Gás 💨 — Painel do Gerente</footer>
 
-    // ====== Listar Vendedores ======
-    const divVend = document.getElementById("listaVendedores");
-    function carregarVendedores() {
-      divVend.innerHTML = "";
-      const vendedores = usuarios.filter(u => u.tipo === "vendedor");
-      vendedores.forEach(v => {
-        const card = document.createElement("div");
-        card.className = "vendedor-card";
-        card.innerHTML = `
-          <img src="${v.foto || 'https://via.placeholder.com/150'}" class="foto-vendedor">
-          <div class="info">
-            <h3>${v.nome}</h3>
-            <p>${v.marca || "Marca não informada"}</p>
-            <p><strong>R$ ${v.preco || "--"}</strong></p>
-            <button class="btn-excluir" onclick="excluirUsuario(${v.id})">Excluir</button>
-          </div>
-        `;
-        divVend.appendChild(card);
-      });
-    }
-
-    // ====== Listar Clientes ======
-    const divCli = document.getElementById("listaClientes");
-    function carregarClientes() {
-      divCli.innerHTML = "";
-      const clientes = usuarios.filter(u => u.tipo === "cliente");
-      clientes.forEach(c => {
-        const card = document.createElement("div");
-        card.className = "vendedor-card";
-        card.innerHTML = `
-          <div class="info">
-            <h3>${c.nome}</h3>
-            <p>${c.endereco.rua}, ${c.endereco.numero}</p>
-            <p>${c.endereco.bairro} - ${c.endereco.cidade}/${c.endereco.estado}</p>
-            <button class="btn-excluir" onclick="excluirUsuario(${c.id})">Excluir</button>
-          </div>
-        `;
-        divCli.appendChild(card);
-      });
-    }
-
-    // ====== Excluir Usuário ======
-    function excluirUsuario(id) {
-      if (confirm("Deseja realmente excluir este usuário?")) {
-        usuarios = usuarios.filter(u => u.id !== id);
-        localStorage.setItem("usuarios", JSON.stringify(usuarios));
-        carregarVendedores();
-        carregarClientes();
-      }
-    }
-
-    // ====== Cadastrar Vendedor ======
-    document.getElementById("btnCadastrar").addEventListener("click", () => {
-      const nome = document.getElementById("nome").value.trim();
-      const senha = document.getElementById("senha").value.trim();
-      const marca = document.getElementById("marca").value.trim();
-      const preco = document.getElementById("preco").value.trim();
-      const fotoInput = document.getElementById("foto");
-      const file = fotoInput.files[0];
-
-      if (!nome || !senha) {
-        alert("Preencha o nome e a senha.");
-        return;
-      }
-
-      let novo = {
-        id: Date.now(),
-        nome,
-        senha,
-        tipo: "vendedor",
-        marca,
-        preco,
-        foto: "",
-        status: false
-      };
-
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          novo.foto = reader.result;
-          salvarUsuario(novo);
-        };
-        reader.readAsDataURL(file);
-      } else {
-        salvarUsuario(novo);
-      }
-    });
-
-    function salvarUsuario(user) {
-      usuarios.push(user);
-      localStorage.setItem("usuarios", JSON.stringify(usuarios));
-      alert("Vendedor cadastrado com sucesso!");
-      carregarVendedores();
-    }
-
-    // Inicialização
-    carregarVendedores();
-    carregarClientes();
-  </script>
+  <script type="module" src="gerente.js"></script>
 </body>
 </html>
