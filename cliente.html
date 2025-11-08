@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clientes - Olha o Gás 💨</title>
+  <title>Olha o Gás 💨 — Pedidos</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    /* === Fundo e layout principal === */
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
@@ -18,233 +17,136 @@
     }
 
     header {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      color: white;
       width: 100%;
       text-align: center;
-      padding: 20px 10px;
-      font-size: 1.5rem;
+      color: white;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      padding: 15px;
+      font-size: 1.4rem;
       font-weight: 700;
-      letter-spacing: 1px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }<header>
-  <div class="topo-cliente">
-    <h1>🧑‍💼 Vendedores Disponíveis</h1>
-    <button id="btnPedidos" class="btn-pedidos">
-      📋 Meus Pedidos <span id="contadorPedidos">0</span>
-    </button>
-  </div>
-</header>
-
-
-    /* === Lista de vendedores === */
-    .lista-vendedores {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 25px;
-      padding: 40px 15px;
-      max-width: 1100px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
 
+    .lista-vendedores {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding: 20px;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    /* === CARD DO VENDEDOR === */
     .vendedor-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(12px);
-      color: white;
-      width: 260px;
+      backdrop-filter: blur(10px);
       border-radius: 16px;
-      padding: 15px;
-      text-align: center;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-      transition: transform 0.3s ease, background 0.3s;
+      padding: 12px;
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      transition: all 0.3s;
     }
 
     .vendedor-card:hover {
-      transform: translateY(-5px);
       background: rgba(255,255,255,0.25);
+      transform: scale(1.01);
     }
 
-    .vendedor-card img {
-      width: 100%;
-      height: 150px;
+    .vendedor-foto {
+      width: 80px;
+      height: 80px;
       border-radius: 12px;
       object-fit: cover;
-      margin-bottom: 10px;
+      flex-shrink: 0;
     }
 
-    .vendedor-card h3 {
-      font-size: 1.2rem;
-      margin: 6px 0 4px;
+    .vendedor-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
-    .vendedor-card p {
+    .vendedor-info h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .vendedor-info p {
+      margin: 2px 0;
       font-size: 0.9rem;
       opacity: 0.9;
-      margin: 2px 0;
     }
 
-    .vendedor-card.ativo {
-      border: 2px solid #00ff99;
+    /* === BOTÕES DE PRODUTOS === */
+    .acoes-produto {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
     }
 
-    .vendedor-card.inativo {
-      border: 2px solid #ff6666;
-      opacity: 0.7;
-    }
-
-    .btn-pedido {
-      margin-top: 10px;
-      background: #fff;
-      color: #004aad;
+    .btn-produto {
+      flex: 1;
       border: none;
-      border-radius: 8px;
-      padding: 10px 15px;
+      border-radius: 10px;
+      padding: 10px;
       font-weight: 600;
+      font-size: 0.9rem;
       cursor: pointer;
-      transition: all 0.3s;
+      transition: all 0.2s ease;
+      background: rgba(255,255,255,0.2);
+      color: white;
     }
 
-    .btn-pedido:hover {
-      background: #e6e6e6;
+    .btn-produto:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .btn-produto.ativo {
+      background: #00ff99;
+      color: #004aad;
       transform: scale(1.05);
     }
 
-    .btn-pedido:disabled {
-      background: rgba(255,255,255,0.3);
-      color: rgba(255,255,255,0.6);
-      cursor: not-allowed;
-    }
-
-    /* === Modal de Pedido === */
-    .modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10;
-      animation: fadeIn 0.4s ease;
-    }
-
-    .modal-content {
-      background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 25px;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      color: white;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-    }
-
-    .modal-content h2 {
-      margin-top: 0;
-      font-size: 1.4rem;
-    }
-
-    .form-produto {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 12px 0;
-      font-weight: 500;
-    }
-
-    .modal-content input {
-      width: 60px;
-      text-align: center;
+    /* === BOTÃO DE CONFIRMAR PEDIDO === */
+    .btn-confirmar {
+      margin-top: 10px;
+      width: 100%;
+      background: #00ff99;
+      color: #004aad;
       border: none;
-      border-radius: 8px;
-      padding: 5px;
-      font-size: 1rem;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      outline: none;
-    }
-
-    .modal-content input::-webkit-inner-spin-button {
-      display: none;
-    }
-
-    .modal-content button {
-      margin-top: 15px;
-      border: none;
-      padding: 10px 18px;
-      border-radius: 8px;
+      border-radius: 10px;
+      padding: 10px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
+      display: none;
     }
 
-    #confirmarPedido {
-      background: #00ff99;
-      color: #004aad;
-    }
-
-    #confirmarPedido:hover {
+    .btn-confirmar:hover {
       background: #00e589;
       transform: scale(1.05);
     }
 
-    #fecharModal {
-      background: rgba(255,255,255,0.2);
-      color: white;
-      margin-left: 8px;
-    }
-
-    #fecharModal:hover {
-      background: rgba(255,255,255,0.3);
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    /* === Rodapé simples === */
     footer {
       text-align: center;
       color: rgba(255,255,255,0.7);
-      font-size: 0.85rem;
-      margin-bottom: 20px;
+      font-size: 0.8rem;
+      margin: 25px 0 10px;
     }
   </style>
 </head>
 <body>
   <header>🧑‍💼 Vendedores Disponíveis</header>
 
-  <main id="lista-vendedores" class="lista-vendedores"></main>
+  <main class="lista-vendedores" id="lista-vendedores"></main>
 
-  <!-- Modal de pedido -->
-  <div id="modalPedido" class="modal" style="display:none;">
-    <div class="modal-content">
-      <h2>Fazer Pedido</h2>
-      <p id="nomeVendedorPedido"></p>
-
-      <div class="form-produto">
-        <label>🔥 Gás 13 kg</label>
-        <input type="number" id="qtdGas" min="0" value="0">
-        <span id="precoGasPedido"></span>
-      </div>
-
-      <div class="form-produto">
-        <label>💧 Água 20 L</label>
-        <input type="number" id="qtdAgua" min="0" value="0">
-        <span id="precoAguaPedido"></span>
-      </div>
-
-      <p><strong>Total: R$ <span id="totalPedido">0</span></strong></p>
-
-      <button id="confirmarPedido">Confirmar Pedido</button>
-      <button id="fecharModal">Cancelar</button>
-    </div>
-  </div>
-
-  <footer>© 2025 Olha o Gás 💨 — Sistema Integrado de Entregas</footer>
+  <footer>© 2025 Olha o Gás 💨 — Sistema de Entregas</footer>
 
   <script type="module" src="cliente.js"></script>
 </body>
