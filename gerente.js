@@ -10,8 +10,11 @@ const precoGasInput = document.getElementById("precoGas");
 const fotoInput = document.getElementById("foto");
 const btnCadastrar = document.getElementById("btnCadastrar");
 const listaVendedores = document.getElementById("listaVendedores");
+const listaClientes = document.getElementById("listaClientes");
 
-// Cadastrar novo vendedor
+// ===============================
+// CADASTRAR NOVO VENDEDOR
+// ===============================
 btnCadastrar.addEventListener("click", async () => {
   const nome = nomeInput.value.trim();
   const senha = senhaInput.value.trim();
@@ -58,29 +61,52 @@ async function salvarVendedor(foto) {
   fotoInput.value = "";
 }
 
-// Listar vendedores em tempo real
+// ===============================
+// LISTAR VENDEDORES + CLIENTES
+// ===============================
 onSnapshot(collection(db, "usuarios"), (snapshot) => {
   listaVendedores.innerHTML = "";
+  listaClientes.innerHTML = "";
+
   snapshot.forEach((docSnap) => {
-    const v = docSnap.data();
-    if (v.tipo === "vendedor") {
+    const u = docSnap.data();
+
+    // -------- VENDEDORES --------
+    if (u.tipo === "vendedor") {
       const card = document.createElement("div");
       card.className = "vendedor-card";
       card.innerHTML = `
-        <img src="${v.foto || 'https://via.placeholder.com/230x140'}" class="foto-vendedor">
-        <h3>${v.nome}</h3>
-        <p>🔥 Gás: ${v.produtos?.gas?.marca || "—"} - R$ ${v.produtos?.gas?.preco || "—"}</p>
-        <p>${v.status ? "🟢 Ativo" : "🔴 Inativo"}</p>
+        <img src="${u.foto || 'https://via.placeholder.com/230x140?text=Sem+Foto'}" class="foto-vendedor">
+        <h3>${u.nome}</h3>
+        <p>🔥 Gás: ${u.produtos?.gas?.marca || "—"} - R$ ${u.produtos?.gas?.preco || "—"}</p>
+        <p>${u.status ? "🟢 Ativo" : "🔴 Inativo"}</p>
         <button class="btn-excluir">Excluir</button>
       `;
-
       card.querySelector(".btn-excluir").addEventListener("click", async () => {
-        if (confirm(`Excluir vendedor ${v.nome}?`)) {
+        if (confirm(`Excluir vendedor ${u.nome}?`)) {
           await deleteDoc(doc(db, "usuarios", docSnap.id));
         }
       });
-
       listaVendedores.appendChild(card);
+    }
+
+    // -------- CLIENTES --------
+    if (u.tipo === "cliente") {
+      const card = document.createElement("div");
+      card.className = "vendedor-card";
+      const end = u.endereco || {};
+      card.innerHTML = `
+        <h3>${u.nome}</h3>
+        <p>${end.rua || "Rua não informada"}, ${end.numero || ""}</p>
+        <p>${end.bairro || ""} - ${end.cidade || ""}/${end.estado || ""}</p>
+        <button class="btn-excluir">Excluir</button>
+      `;
+      card.querySelector(".btn-excluir").addEventListener("click", async () => {
+        if (confirm(`Excluir cliente ${u.nome}?`)) {
+          await deleteDoc(doc(db, "usuarios", docSnap.id));
+        }
+      });
+      listaClientes.appendChild(card);
     }
   });
 });
