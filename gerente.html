@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel do Gerente - Olha o Gás 💨</title>
+  <title>Painel do Gerente — Olha o Gás 💨</title>
   <link rel="stylesheet" href="style.css">
   <style>
     body {
@@ -24,93 +24,92 @@
       width: 100%;
       text-align: center;
       padding: 20px 10px;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: 700;
-      letter-spacing: 1px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
 
     .painel-gerente {
       max-width: 1100px;
       width: 100%;
-      padding: 40px 20px;
+      padding: 30px 20px 100px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* === Card de cadastro === */
-    .cadastro-vendedor {
-      background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(12px);
-      border-radius: 16px;
-      padding: 25px;
-      width: 100%;
-      max-width: 500px;
-      text-align: center;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-      color: white;
-      margin-bottom: 40px;
-      animation: fadeIn 0.4s ease;
-    }
-
-    .cadastro-vendedor h2 {
-      margin-bottom: 15px;
-      font-size: 1.3rem;
-      color: #fff;
-    }
-
-    .cadastro-vendedor input {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      font-size: 0.95rem;
-      outline: none;
-    }
-
-    .cadastro-vendedor input::placeholder {
-      color: rgba(255,255,255,0.7);
-    }
-
-    #btnCadastrar {
-      width: 100%;
+    /* === BOTÃO CADASTRAR === */
+    .btn-acao {
       background: #00ff99;
       color: #004aad;
       border: none;
-      border-radius: 8px;
-      padding: 12px;
+      border-radius: 10px;
+      padding: 10px 16px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
       margin-top: 10px;
     }
-
-    #btnCadastrar:hover {
+    .btn-acao:hover {
       background: #00e589;
       transform: scale(1.05);
     }
 
-    /* === Listas (vendedores e clientes) === */
+    /* === PAINEL DE INDICADORES === */
+    .painel-indicadores {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin: 25px 0;
+    }
+
+    .indicador {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 15px 20px;
+      width: 240px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      color: white;
+    }
+
+    .indicador h4 {
+      margin: 0 0 8px;
+    }
+
+    .progresso {
+      width: 100%;
+      height: 12px;
+      background: rgba(255,0,0,0.3);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .barra-verde {
+      height: 100%;
+      width: 0%;
+      background: #00ff99;
+      transition: width 0.5s ease;
+    }
+
+    .indicador p {
+      margin: 6px 0 0;
+      font-weight: 600;
+    }
+
+    /* === LISTAS === */
     .lista-vendedores {
       width: 100%;
       max-width: 1000px;
-      margin-bottom: 40px;
+      margin-top: 30px;
     }
 
     .lista-vendedores h2 {
       text-align: center;
       margin-bottom: 20px;
-    }
-
-    #listaVendedores, #listaClientes {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 25px;
     }
 
     .vendedor-card {
@@ -139,18 +138,7 @@
       margin-bottom: 10px;
     }
 
-    .vendedor-card h3 {
-      font-size: 1.1rem;
-      margin-bottom: 6px;
-    }
-
-    .vendedor-card p {
-      font-size: 0.9rem;
-      opacity: 0.9;
-      margin: 3px 0;
-    }
-
-    .vendedor-card .btn-excluir {
+    .btn-excluir {
       margin-top: 10px;
       background: #ff4d4d;
       color: white;
@@ -162,9 +150,70 @@
       transition: all 0.3s;
     }
 
-    .vendedor-card .btn-excluir:hover {
+    .btn-excluir:hover {
       background: #e63939;
       transform: scale(1.05);
+    }
+
+    /* === MODAL CADASTRO === */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+    }
+
+    .modal-conteudo {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 25px;
+      width: 90%;
+      max-width: 400px;
+      color: white;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-conteudo input {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .botoes-modal {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .btn-salvar {
+      background: #00ff99;
+      color: #004aad;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-cancelar {
+      background: rgba(255,255,255,0.25);
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
     }
 
     footer {
@@ -175,8 +224,8 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
@@ -184,16 +233,32 @@
   <header>👨‍💼 Painel do Gerente</header>
 
   <main class="painel-gerente">
-    <!-- Cadastro de vendedor -->
-    <section class="cadastro-vendedor">
-      <h2>Cadastrar novo vendedor</h2>
-      <input type="text" id="nome" placeholder="Nome do vendedor">
-      <input type="password" id="senha" placeholder="Senha">
-      <input type="text" id="marcaGas" placeholder="Marca do gás (opcional)">
-      <input type="number" id="precoGas" placeholder="Preço 13kg (opcional)">
-      <input type="file" id="foto" accept="image/*">
-      <button id="btnCadastrar">Cadastrar Vendedor</button>
-    </section>
+    <!-- === Indicadores === -->
+    <div class="painel-indicadores">
+      <div class="indicador">
+        <h4>👥 Vendedores</h4>
+        <div class="progresso"><div id="barraVendedores" class="barra-verde"></div></div>
+        <p id="infoVendedores">Ativos: 0 / 0</p>
+      </div>
+
+      <div class="indicador">
+        <h4>💸 Vendas</h4>
+        <p id="infoVendas">0</p>
+      </div>
+
+      <div class="indicador">
+        <h4>💰 Caixa</h4>
+        <p id="infoCaixa">R$ 0,00</p>
+      </div>
+
+      <div class="indicador">
+        <h4>💵 Receita Plataforma</h4>
+        <p id="infoReceita">R$ 0,00</p>
+      </div>
+    </div>
+
+    <!-- Botão de novo vendedor -->
+    <button id="abrirCadastro" class="btn-acao">➕ Novo Vendedor</button>
 
     <!-- Lista de vendedores -->
     <section class="lista-vendedores">
@@ -201,16 +266,25 @@
       <div id="listaVendedores"></div>
     </section>
 
-    <!-- ✅ Nova seção: Lista de clientes -->
-    <section class="lista-vendedores">
-      <h2>Lista de Clientes</h2>
-      <div id="listaClientes"></div>
-    </section>
+    <!-- Modal de cadastro -->
+    <div id="modalCadastro" class="modal">
+      <div class="modal-conteudo">
+        <h2>🧾 Novo Vendedor</h2>
+        <input type="text" id="nome" placeholder="Nome do vendedor">
+        <input type="password" id="senha" placeholder="Senha">
+        <input type="text" id="marcaGas" placeholder="Marca do gás (opcional)">
+        <input type="number" id="precoGas" placeholder="Preço 13kg (opcional)">
+        <input type="file" id="foto" accept="image/*">
+        <div class="botoes-modal">
+          <button id="btnCadastrar" class="btn-salvar">Salvar</button>
+          <button id="fecharModal" class="btn-cancelar">Cancelar</button>
+        </div>
+      </div>
+    </div>
   </main>
 
   <footer>© 2025 Olha o Gás 💨 — Painel do Gerente</footer>
 
-  <!-- Firestore control -->
   <script type="module" src="gerente.js"></script>
 </body>
 </html>
