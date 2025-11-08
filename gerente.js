@@ -46,7 +46,7 @@ async function salvarVendedor(foto) {
     nome: nomeInput.value.trim(),
     senha: senhaInput.value.trim(),
     tipo: "vendedor",
-    status: false,
+    status: true, // ✅ ativo por padrão
     foto: foto,
     produtos: {
       gas: { ativo: !!(marcaGas || precoGas), marca: marcaGas, preco: precoGas },

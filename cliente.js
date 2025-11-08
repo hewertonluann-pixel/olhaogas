@@ -1,95 +1,55 @@
-// LISTAR VENDEDORES
+// Importa o Firestore do SDK e a conexão local (firebase.js)
+import { db } from "./firebase.js";
+import {
+  collection,
+  onSnapshot,
+} from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
+
+// Seleciona o container principal da lista
+const lista = document.getElementById("lista-vendedores");
+
+// Teste de conexão com Firebase
+console.log("🔥 Testando conexão com Firebase:", db);
+
+// Escuta em tempo real a coleção "usuarios"
 onSnapshot(collection(db, "usuarios"), (snapshot) => {
   lista.innerHTML = "";
+  let totalVendedores = 0;
+
   snapshot.forEach((docSnap) => {
     const v = docSnap.data();
-    const idDoc = docSnap.id; // Firestore ID
 
-    // Corrige compatibilidade com dados antigos:
-    const tipo = v.tipo || "";
-    const ativo = v.status === true || v.status === "ativo";
+    // Filtra apenas vendedores
+    if (v.tipo === "vendedor") {
+      totalVendedores++;
 
-    if (tipo === "vendedor") {
       const card = document.createElement("div");
       card.className = "vendedor-card";
 
+      const ativo = v.status === true || v.status === "ativo";
       const precoGas = parseFloat(v.produtos?.gas?.preco || 0);
       const precoAgua = parseFloat(v.produtos?.agua?.preco || 0);
 
       card.innerHTML = `
-        <img src="${v.foto || 'https://via.placeholder.com/80'}" class="foto-vendedor">
-        <div class="info-vendedor">
+        <img src="${v.foto || 'https://via.placeholder.com/80'}" class="foto-vendedor" alt="foto">
+        <div class="vendedor-info">
           <h3>${v.nome}</h3>
-          <div class="produtos">
-            ${v.produtos?.gas?.ativo ? `
-              <div class="produto" data-tipo="gas" data-vendedor="${idDoc}">
-                <span>🔥</span>
-                <div class="acoes">
-                  <button class="btn-contador menos">−</button>
-                  <span class="contador">0</span>
-                  <button class="btn-contador mais">+</button>
-                </div>
-                <span class="preco">R$ ${precoGas}</span>
-              </div>` : ""}
-
-            ${v.produtos?.agua?.ativo ? `
-              <div class="produto" data-tipo="agua" data-vendedor="${idDoc}">
-                <span>💧</span>
-                <div class="acoes">
-                  <button class="btn-contador menos">−</button>
-                  <span class="contador">0</span>
-                  <button class="btn-contador mais">+</button>
-                </div>
-                <span class="preco">R$ ${precoAgua}</span>
-              </div>` : ""}
-          </div>
+          ${v.produtos?.gas?.ativo ? `<p>🔥 Gás: R$ ${precoGas.toFixed(2)}</p>` : ""}
+          ${v.produtos?.agua?.ativo ? `<p>💧 Água: R$ ${precoAgua.toFixed(2)}</p>` : ""}
+          <p style="margin-top:6px;font-size:0.9rem;">${ativo ? "🟢 Ativo" : "🔴 Inativo"}</p>
         </div>
       `;
 
-      // Se quiser mostrar apenas vendedores ativos
+      // Se o vendedor estiver inativo, deixa o card esmaecido
       if (!ativo) {
         card.style.opacity = "0.5";
         card.style.pointerEvents = "none";
       }
 
-      // Lógica dos botões + e −
-      const botoes = card.querySelectorAll(".btn-contador");
-      botoes.forEach(btn => {
-        btn.addEventListener("click", () => {
-          const produto = btn.closest(".produto");
-          const tipo = produto.dataset.tipo;
-          const idVendedor = produto.dataset.vendedor;
-          const contadorEl = produto.querySelector(".contador");
-          let valor = parseInt(contadorEl.textContent);
-
-          if (btn.classList.contains("mais")) {
-            valor++;
-            totalItens++;
-          } else if (btn.classList.contains("menos") && valor > 0) {
-            valor--;
-            totalItens--;
-          }
-
-          contadorEl.textContent = valor;
-          atualizarCarrinho();
-
-          // Registra o item no carrinho local
-          let existente = pedidosPendentes.find(p => p.idVendedor === idVendedor);
-          if (!existente) {
-            pedidosPendentes.push({
-              idVendedor,
-              nomeVendedor: v.nome,
-              produtos: { gas: 0, agua: 0 },
-              precoGas,
-              precoAgua
-            });
-            existente = pedidosPendentes.find(p => p.idVendedor === idVendedor);
-          }
-          existente.produtos[tipo] = valor;
-        });
-      });
-
       lista.appendChild(card);
     }
   });
+
+  // Mostra no console quantos vendedores foram carregados
+  console.log(`📦 ${totalVendedores} vendedores carregados`);
 });
