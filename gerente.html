@@ -56,7 +56,7 @@
       transform: scale(1.05);
     }
 
-    /* === PAINEL DE INDICADORES === */
+    /* === INDICADORES === */
     .painel-indicadores {
       display: flex;
       flex-wrap: wrap;
@@ -64,7 +64,6 @@
       gap: 15px;
       margin: 25px 0;
     }
-
     .indicador {
       background: rgba(255,255,255,0.15);
       backdrop-filter: blur(8px);
@@ -75,10 +74,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
       color: white;
     }
-
-    .indicador h4 {
-      margin: 0 0 8px;
-    }
+    .indicador h4 { margin: 0 0 8px; }
 
     .progresso {
       width: 100%;
@@ -87,134 +83,13 @@
       border-radius: 10px;
       overflow: hidden;
     }
-
     .barra-verde {
       height: 100%;
       width: 0%;
       background: #00ff99;
       transition: width 0.5s ease;
     }
-
-    .indicador p {
-      margin: 6px 0 0;
-      font-weight: 600;
-    }
-
-    /* === LISTAS === */
-    .lista-vendedores {
-      width: 100%;
-      max-width: 1000px;
-      margin-top: 30px;
-    }
-
-    .lista-vendedores h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .vendedor-card {
-      background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 15px;
-      width: 250px;
-      text-align: center;
-      color: white;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-      transition: transform 0.3s;
-      animation: fadeIn 0.4s ease;
-    }
-
-    .vendedor-card:hover {
-      transform: translateY(-5px);
-      background: rgba(255,255,255,0.25);
-    }
-
-    .vendedor-card img {
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
-      border-radius: 12px;
-      margin-bottom: 10px;
-    }
-
-    .btn-excluir {
-      margin-top: 10px;
-      background: #ff4d4d;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 8px 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .btn-excluir:hover {
-      background: #e63939;
-      transform: scale(1.05);
-    }
-
-    /* === MODAL CADASTRO === */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(4px);
-      justify-content: center;
-      align-items: center;
-      z-index: 20;
-    }
-
-    .modal-conteudo {
-      background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 25px;
-      width: 90%;
-      max-width: 400px;
-      color: white;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
-      animation: fadeIn 0.3s ease;
-    }
-
-    .modal-conteudo input {
-      width: 100%;
-      padding: 10px;
-      margin: 6px 0;
-      border: none;
-      border-radius: 8px;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      font-size: 0.9rem;
-    }
-
-    .botoes-modal {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
-
-    .btn-salvar {
-      background: #00ff99;
-      color: #004aad;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .btn-cancelar {
-      background: rgba(255,255,255,0.25);
-      border: none;
-      padding: 8px 14px;
-      border-radius: 8px;
-      color: white;
-      cursor: pointer;
-    }
+    .indicador p { margin: 6px 0 0; font-weight: 600; }
 
     footer {
       text-align: center;
@@ -222,23 +97,23 @@
       font-size: 0.85rem;
       margin: 30px 0;
     }
-
-    @keyframes fadeIn {
-      from { transform: scale(0.95); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
   </style>
 </head>
 <body>
   <header>👨‍💼 Painel do Gerente</header>
 
   <main class="painel-gerente">
-    <!-- === Indicadores === -->
+    <!-- Indicadores -->
     <div class="painel-indicadores">
       <div class="indicador">
         <h4>👥 Vendedores</h4>
         <div class="progresso"><div id="barraVendedores" class="barra-verde"></div></div>
         <p id="infoVendedores">Ativos: 0 / 0</p>
+      </div>
+
+      <div class="indicador">
+        <h4>⭐ Reputação Média</h4>
+        <p id="infoReputacao">—</p>
       </div>
 
       <div class="indicador">
@@ -257,30 +132,8 @@
       </div>
     </div>
 
-    <!-- Botão de novo vendedor -->
-    <button id="abrirCadastro" class="btn-acao">➕ Novo Vendedor</button>
-
-    <!-- Lista de vendedores -->
-    <section class="lista-vendedores">
-      <h2>Lista de Vendedores</h2>
-      <div id="listaVendedores"></div>
-    </section>
-
-    <!-- Modal de cadastro -->
-    <div id="modalCadastro" class="modal">
-      <div class="modal-conteudo">
-        <h2>🧾 Novo Vendedor</h2>
-        <input type="text" id="nome" placeholder="Nome do vendedor">
-        <input type="password" id="senha" placeholder="Senha">
-        <input type="text" id="marcaGas" placeholder="Marca do gás (opcional)">
-        <input type="number" id="precoGas" placeholder="Preço 13kg (opcional)">
-        <input type="file" id="foto" accept="image/*">
-        <div class="botoes-modal">
-          <button id="btnCadastrar" class="btn-salvar">Salvar</button>
-          <button id="fecharModal" class="btn-cancelar">Cancelar</button>
-        </div>
-      </div>
-    </div>
+    <!-- Botão para gerenciar vendedores -->
+    <button id="abrirGerenciar" class="btn-acao">➕ Novo / Gerenciar Vendedores</button>
   </main>
 
   <footer>© 2025 Olha o Gás 💨 — Painel do Gerente</footer>
