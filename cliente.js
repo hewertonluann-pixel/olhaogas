@@ -1,37 +1,18 @@
-import { db } from "./firebase.js";
-import {
-  collection, onSnapshot, addDoc
-} from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
-
-const lista = document.getElementById("lista-vendedores");
-const carrinhoFlutuante = document.getElementById("carrinhoFlutuante");
-const contadorCarrinho = document.getElementById("contadorCarrinho");
-const usuarioLogado = JSON.parse(localStorage.getItem("usuarioLogado"));
-
-let totalItens = 0;
-let pedidosPendentes = []; // lista de itens prontos para pedido
-
-// Atualiza contador visual
-function atualizarCarrinho() {
-  contadorCarrinho.textContent = totalItens;
-  carrinhoFlutuante.style.display = totalItens > 0 ? "flex" : "none";
-}
-
-// Vai para página de pedidos
-carrinhoFlutuante.addEventListener("click", () => {
-  window.location.href = "pedidos.html";
-});
-
 // LISTAR VENDEDORES
 onSnapshot(collection(db, "usuarios"), (snapshot) => {
   lista.innerHTML = "";
   snapshot.forEach((docSnap) => {
     const v = docSnap.data();
-    if (v.tipo === "vendedor" && v.status) {
+    const idDoc = docSnap.id; // Firestore ID
+
+    // Corrige compatibilidade com dados antigos:
+    const tipo = v.tipo || "";
+    const ativo = v.status === true || v.status === "ativo";
+
+    if (tipo === "vendedor") {
       const card = document.createElement("div");
       card.className = "vendedor-card";
 
-      const idVendedor = docSnap.id;
       const precoGas = parseFloat(v.produtos?.gas?.preco || 0);
       const precoAgua = parseFloat(v.produtos?.agua?.preco || 0);
 
@@ -41,7 +22,7 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
           <h3>${v.nome}</h3>
           <div class="produtos">
             ${v.produtos?.gas?.ativo ? `
-              <div class="produto" data-tipo="gas">
+              <div class="produto" data-tipo="gas" data-vendedor="${idDoc}">
                 <span>🔥</span>
                 <div class="acoes">
                   <button class="btn-contador menos">−</button>
@@ -52,7 +33,7 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
               </div>` : ""}
 
             ${v.produtos?.agua?.ativo ? `
-              <div class="produto" data-tipo="agua">
+              <div class="produto" data-tipo="agua" data-vendedor="${idDoc}">
                 <span>💧</span>
                 <div class="acoes">
                   <button class="btn-contador menos">−</button>
@@ -65,12 +46,19 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
         </div>
       `;
 
-      // lógica dos botões + e −
+      // Se quiser mostrar apenas vendedores ativos
+      if (!ativo) {
+        card.style.opacity = "0.5";
+        card.style.pointerEvents = "none";
+      }
+
+      // Lógica dos botões + e −
       const botoes = card.querySelectorAll(".btn-contador");
       botoes.forEach(btn => {
         btn.addEventListener("click", () => {
           const produto = btn.closest(".produto");
           const tipo = produto.dataset.tipo;
+          const idVendedor = produto.dataset.vendedor;
           const contadorEl = produto.querySelector(".contador");
           let valor = parseInt(contadorEl.textContent);
 
@@ -85,8 +73,8 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
           contadorEl.textContent = valor;
           atualizarCarrinho();
 
-          // registra no carrinho local
-          const existente = pedidosPendentes.find(p => p.idVendedor === idVendedor);
+          // Registra o item no carrinho local
+          let existente = pedidosPendentes.find(p => p.idVendedor === idVendedor);
           if (!existente) {
             pedidosPendentes.push({
               idVendedor,
@@ -95,41 +83,13 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
               precoGas,
               precoAgua
             });
+            existente = pedidosPendentes.find(p => p.idVendedor === idVendedor);
           }
-          const atual = pedidosPendentes.find(p => p.idVendedor === idVendedor);
-          atual.produtos[tipo] = valor;
+          existente.produtos[tipo] = valor;
         });
       });
 
       lista.appendChild(card);
     }
   });
-});
-
-// Quando sair da página (confirmar pedidos)
-window.addEventListener("beforeunload", async () => {
-  if (totalItens > 0 && usuarioLogado) {
-    for (const pedido of pedidosPendentes) {
-      const total = (pedido.produtos.gas * pedido.precoGas) +
-                    (pedido.produtos.agua * pedido.precoAgua);
-
-      if (total > 0) {
-        await addDoc(collection(db, "pedidos"), {
-          idCliente: usuarioLogado.id,
-          nomeCliente: usuarioLogado.nome,
-          idVendedor: pedido.idVendedor,
-          nomeVendedor: pedido.nomeVendedor,
-          produtos: {
-            gas: { quantidade: pedido.produtos.gas, precoUnitario: pedido.precoGas },
-            agua: { quantidade: pedido.produtos.agua, precoUnitario: pedido.precoAgua }
-          },
-          totalPedido: total,
-          statusPedido: "pendente",
-          statusPagamento: "aguardando",
-          metodoPagamento: "na_entrega",
-          data: new Date().toISOString()
-        });
-      }
-    }
-  }
 });
