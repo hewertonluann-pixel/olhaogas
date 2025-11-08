@@ -94,10 +94,11 @@
       transform: scale(1.05);
     }
 
-    /* === Lista de vendedores === */
+    /* === Lista de cartões === */
     .lista-vendedores {
       width: 100%;
       max-width: 1000px;
+      margin-bottom: 40px;
     }
 
     .lista-vendedores h2 {
@@ -105,7 +106,7 @@
       margin-bottom: 20px;
     }
 
-    #listaVendedores {
+    #listaVendedores, #listaClientes {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -199,10 +200,105 @@
       <h2>Lista de Vendedores</h2>
       <div id="listaVendedores"></div>
     </section>
+
+    <!-- NOVA SEÇÃO: Lista de clientes -->
+    <section class="lista-vendedores">
+      <h2>Lista de Clientes</h2>
+      <div id="listaClientes"></div>
+    </section>
   </main>
 
   <footer>© 2025 Olha o Gás 💨 — Painel do Gerente</footer>
 
-  <script type="module" src="gerente.js"></script>
+  <script>
+    let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+    // ========== LISTAR VENDEDORES ==========
+    const listaVendedores = document.getElementById("listaVendedores");
+    function carregarVendedores() {
+      listaVendedores.innerHTML = "";
+      usuarios.filter(u => u.tipo === "vendedor").forEach(v => {
+        const card = document.createElement("div");
+        card.className = "vendedor-card";
+        card.innerHTML = `
+          <img src="${v.foto || 'https://via.placeholder.com/250x140?text=Sem+Foto'}">
+          <h3>${v.nome}</h3>
+          <p>${v.marca || "Marca não informada"}</p>
+          <p><strong>R$ ${v.preco || "--"}</strong></p>
+          <button class="btn-excluir" onclick="excluirUsuario(${v.id})">Excluir</button>
+        `;
+        listaVendedores.appendChild(card);
+      });
+    }
+
+    // ========== LISTAR CLIENTES ==========
+    const listaClientes = document.getElementById("listaClientes");
+    function carregarClientes() {
+      listaClientes.innerHTML = "";
+      usuarios.filter(u => u.tipo === "cliente").forEach(c => {
+        const card = document.createElement("div");
+        card.className = "vendedor-card";
+        card.innerHTML = `
+          <h3>${c.nome}</h3>
+          <p>${c.endereco?.rua || "Endereço não informado"}, ${c.endereco?.numero || ""}</p>
+          <p>${c.endereco?.bairro || ""} - ${c.endereco?.cidade || ""}/${c.endereco?.estado || ""}</p>
+          <button class="btn-excluir" onclick="excluirUsuario(${c.id})">Excluir</button>
+        `;
+        listaClientes.appendChild(card);
+      });
+    }
+
+    // ========== EXCLUIR ==========
+    function excluirUsuario(id) {
+      if (confirm("Deseja excluir este usuário?")) {
+        usuarios = usuarios.filter(u => u.id !== id);
+        localStorage.setItem("usuarios", JSON.stringify(usuarios));
+        carregarVendedores();
+        carregarClientes();
+      }
+    }
+
+    // ========== CADASTRAR NOVO VENDEDOR ==========
+    document.getElementById("btnCadastrar").addEventListener("click", () => {
+      const nome = document.getElementById("nome").value.trim();
+      const senha = document.getElementById("senha").value.trim();
+      const marca = document.getElementById("marcaGas").value.trim();
+      const preco = document.getElementById("precoGas").value.trim();
+      const file = document.getElementById("foto").files[0];
+
+      if (!nome || !senha) return alert("Preencha nome e senha!");
+
+      const novo = {
+        id: Date.now(),
+        nome,
+        senha,
+        tipo: "vendedor",
+        marca,
+        preco,
+        status: false,
+        foto: ""
+      };
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          novo.foto = reader.result;
+          salvarUsuario(novo);
+        };
+        reader.readAsDataURL(file);
+      } else salvarUsuario(novo);
+    });
+
+    function salvarUsuario(user) {
+      usuarios.push(user);
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+      alert("Vendedor cadastrado com sucesso!");
+      carregarVendedores();
+    }
+
+    // Inicializar
+    carregarVendedores();
+    carregarClientes();
+  </script>
 </body>
 </html>
