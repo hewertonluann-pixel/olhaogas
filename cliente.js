@@ -11,18 +11,15 @@ const contadorCarrinho = document.getElementById("contadorCarrinho");
 
 let totalItens = 0;
 
-// Atualiza contador do carrinho
 function atualizarCarrinho() {
   contadorCarrinho.textContent = totalItens;
   carrinhoFlutuante.style.display = totalItens > 0 ? "flex" : "none";
 }
 
-// Ao clicar no carrinho → vai para a página de pedidos
 carrinhoFlutuante.addEventListener("click", () => {
   window.location.href = "pedidos.html";
 });
 
-// === LISTA DE VENDEDORES ===
 onSnapshot(collection(db, "usuarios"), (snapshot) => {
   lista.innerHTML = "";
   snapshot.forEach((docSnap) => {
@@ -31,8 +28,10 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
       const ativo = v.status === true || v.status === "ativo";
       const precoGas = parseFloat(v.produtos?.gas?.preco || 0);
       const precoAgua = parseFloat(v.produtos?.agua?.preco || 0);
-      const reputacaoMedia = v.reputacao?.media?.toFixed(1) || "—";
-      const reputacaoTotal = v.reputacao?.totalAvaliacoes || 0;
+      const media = parseFloat(v.reputacao?.media || 0);
+
+      // gera as estrelas visuais conforme a média (0 a 5)
+      const estrelas = gerarEstrelas(media);
 
       const card = document.createElement("div");
       card.className = "vendedor-card";
@@ -41,7 +40,7 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
         <img src="${v.foto || 'https://via.placeholder.com/70'}" class="foto-vendedor" alt="foto">
         <div class="vendedor-info">
           <h3>${v.nome}</h3>
-          <p>⭐ ${reputacaoMedia} (${reputacaoTotal})</p>
+          <div class="estrelas">${estrelas}</div>
 
           ${v.produtos?.gas?.ativo ? `
             <div class="produto" data-tipo="gas">
@@ -69,13 +68,11 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
         </div>
       `;
 
-      // Se o vendedor estiver inativo, deixa o card esmaecido
       if (!ativo) {
         card.style.opacity = "0.5";
         card.style.pointerEvents = "none";
       }
 
-      // Controle dos botões + e –
       const botoes = card.querySelectorAll(".btn-contador");
       botoes.forEach(btn => {
         btn.addEventListener("click", () => {
@@ -100,3 +97,15 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
     }
   });
 });
+
+// === Função para gerar estrelas visuais ===
+function gerarEstrelas(media) {
+  const total = 5;
+  let estrelasHTML = "";
+  for (let i = 1; i <= total; i++) {
+    estrelasHTML += i <= Math.round(media)
+      ? '<span class="estrela cheia">⭐</span>'
+      : '<span class="estrela vazia">☆</span>';
+  }
+  return estrelasHTML;
+}
