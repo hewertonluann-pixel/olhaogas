@@ -442,3 +442,13 @@ button:hover { background: #003580; }
   font-size: 0.9rem;
   font-weight: 700;
 }
+.vendedor-info p:first-of-type {
+  font-weight: 600;
+  color: #ffd700; /* amarelo ouro para as estrelas */
+  margin-bottom: 4px;
+}
+
+.vendedor-info p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+}
