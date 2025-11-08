@@ -14,6 +14,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      padding-bottom: 80px; /* espaço para o carrinho flutuante */
     }
 
     header {
@@ -37,22 +38,21 @@
       max-width: 600px;
     }
 
+    /* CARD ESTILO DOCUMENTO */
     .vendedor-card {
-      background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 12px;
       display: flex;
       align-items: center;
-      gap: 15px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
       color: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       transition: transform 0.3s ease;
     }
 
     .vendedor-card:hover {
       transform: scale(1.02);
-      background: rgba(255,255,255,0.25);
     }
 
     .foto-vendedor {
@@ -60,14 +60,15 @@
       height: 70px;
       border-radius: 10px;
       object-fit: cover;
-      flex-shrink: 0;
+      margin-right: 12px;
     }
 
     .vendedor-info {
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: center;
+      gap: 8px;
     }
 
     .vendedor-info h3 {
@@ -76,30 +77,118 @@
       font-weight: 600;
     }
 
-    footer {
+    /* PRODUTOS (GÁS e ÁGUA) */
+    .produto {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 5px 10px;
+    }
+
+    .icone-produto {
+      width: 35px;
+      height: 35px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+    }
+
+    .acoes {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-contador {
+      width: 28px;
+      height: 28px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-contador:hover {
+      background: rgba(255,255,255,0.5);
+      transform: scale(1.1);
+    }
+
+    .contador {
+      min-width: 22px;
       text-align: center;
-      color: rgba(255,255,255,0.7);
-      font-size: 0.8rem;
-      margin: 25px 0 10px;
+      font-weight: 600;
+    }
+
+    .preco {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    /* CARRINHO FLUTUANTE */
+    #carrinhoFlutuante {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: #00ff99;
+      color: #004aad;
+      font-size: 1.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: all 0.3s;
+      z-index: 10;
+    }
+
+    #carrinhoFlutuante:hover {
+      transform: scale(1.1);
+      background: #00e589;
+    }
+
+    #contadorCarrinho {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      background: #ff3333;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   </style>
 </head>
 <body>
-  <header>🧑‍💼 Vendedores Disponíveis</header>
+  <header>🧾 Vendedores Disponíveis</header>
 
   <main id="lista-vendedores" class="lista-vendedores">
     <p style="color:rgba(255,255,255,0.8);text-align:center;">Carregando vendedores...</p>
   </main>
 
-  <footer>© 2025 Olha o Gás 💨 — Sistema de Entregas</footer>
+  <!-- CARRINHO FLUTUANTE -->
+  <div id="carrinhoFlutuante">
+    🛒
+    <div id="contadorCarrinho">0</div>
+  </div>
 
-  <!-- 🔥 Importa Firebase primeiro -->
+  <!-- Firebase + Script -->
   <script type="module">
-    import "./firebase.js"; // garante que db seja inicializado
-    console.log("✅ Firebase importado na página cliente");
+    import "./firebase.js";
+    console.log("✅ Firebase inicializado no cliente");
   </script>
-
-  <!-- 🚀 Agora carrega o script do cliente -->
   <script type="module" src="cliente.js"></script>
 </body>
 </html>
