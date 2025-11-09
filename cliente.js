@@ -31,7 +31,6 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
     }
   });
 
-  // Ordena favoritos e status
   vendedores.sort((a, b) => {
     const favA = favoritos.includes(a.id);
     const favB = favoritos.includes(b.id);
@@ -47,12 +46,10 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
     const estrelas = gerarEstrelas(media);
     const isFav = favoritos.includes(v.id);
 
-    // === Card base ===
     const card = document.createElement("div");
     card.className = "vendedor-card";
-    if (!ativo) card.classList.add("inativo"); // adiciona classe visual e bloqueio
+    if (!ativo) card.classList.add("inativo");
 
-    // === Estrutura visual ===
     card.innerHTML = `
       <div class="vendedor-topo">
         <div class="foto-container">
@@ -99,7 +96,7 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
         : `<div class="bolinha-inativa"></div>`}
     `;
 
-    // === Desativa interação se estiver offline ===
+    // Se estiver offline, desativa interações
     if (!ativo) {
       card.querySelectorAll("button, .favorito").forEach(el => {
         el.disabled = true;
@@ -107,10 +104,10 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
         el.style.opacity = "0.6";
       });
       lista.appendChild(card);
-      return; // pula lógica de interação abaixo
+      return;
     }
 
-    // === Eventos apenas para vendedores online ===
+    // Eventos para vendedores ativos
     card.querySelectorAll(".btn-contador").forEach(btn => {
       btn.addEventListener("click", () => {
         const produto = btn.closest(".produto");
@@ -130,7 +127,7 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
       });
     });
 
-    // Favoritar
+    // Favorito ❤️
     const coracao = card.querySelector(".favorito");
     coracao.addEventListener("click", (e) => {
       const id = e.currentTarget.dataset.id;
@@ -149,6 +146,7 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
     lista.appendChild(card);
   });
 });
+
 
 
 function gerarEstrelas(media) {

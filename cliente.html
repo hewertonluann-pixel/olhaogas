@@ -49,80 +49,80 @@
       padding: 10px;
     }
 
-    /* === CARD DO VENDEDOR === */
+    /* === CARD DE VENDEDOR (UMA COLUNA) === */
     .vendedor-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       background: rgba(255,255,255,0.15);
       backdrop-filter: blur(10px);
       border-radius: 18px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-      width: 310px;
-      padding: 16px;
+      width: 280px;
+      padding: 14px;
       color: white;
       transition: transform 0.3s, background 0.3s, opacity 0.3s;
       position: relative;
+      text-align: center;
     }
+
     .vendedor-card:hover {
       transform: translateY(-4px);
       background: rgba(255,255,255,0.25);
     }
 
-    /* CABEÇALHO (foto + nome + reputação) */
+    /* BLOCO SUPERIOR (foto + nome + estrelas) */
     .vendedor-topo {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 10px;
       background: rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 8px 10px;
+      border-radius: 14px;
+      padding: 10px;
+      width: 100%;
       margin-bottom: 12px;
+      position: relative;
     }
 
     .foto-container {
       position: relative;
-      width: 70px;
-      height: 70px;
-      flex-shrink: 0;
+      width: 90px;
+      height: 90px;
+      margin-bottom: 6px;
     }
 
     .foto-container img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 10px;
+      border-radius: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
 
     .favorito {
       position: absolute;
-      top: 4px;
-      right: 4px;
-      font-size: 1.3rem;
+      bottom: 6px;
+      right: 6px;
+      font-size: 1.4rem;
       color: rgba(255,255,255,0.8);
       cursor: pointer;
       transition: transform 0.2s, color 0.3s;
     }
-    .favorito:hover { transform: scale(1.15); }
+    .favorito:hover { transform: scale(1.2); }
     .favorito.ativo { color: red; }
 
-    .vendedor-info {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
     .vendedor-info h3 {
-      margin: 0;
+      margin: 4px 0 3px;
       font-size: 1rem;
       font-weight: 600;
     }
 
     .estrelas {
       display: flex;
+      justify-content: center;
       gap: 2px;
       color: #ffd700;
-      font-size: 1.1rem;
-      margin-top: 4px;
+      font-size: 1.2rem;
     }
 
     .estrela.vazia { opacity: 0.4; }
@@ -132,24 +132,24 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      width: 100%;
     }
 
     .produto {
       background: rgba(255,255,255,0.1);
       border-radius: 12px;
-      padding: 6px 10px;
+      padding: 8px 10px;
       transition: background 0.3s;
     }
-    .produto:hover {
-      background: rgba(255,255,255,0.2);
-    }
+
+    .produto:hover { background: rgba(255,255,255,0.2); }
 
     .preco-faixa {
       text-align: right;
       font-size: 0.85rem;
       font-weight: 600;
       opacity: 0.9;
-      margin-bottom: 3px;
+      margin-bottom: 4px;
     }
 
     .linha-produto {
@@ -159,8 +159,8 @@
     }
 
     .icone-produto {
-      width: 70px;
-      height: 70px;
+      width: 75px;
+      height: 75px;
       object-fit: contain;
     }
 
@@ -171,12 +171,12 @@
     }
 
     .btn-contador {
-      width: 44px;
-      height: 44px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       background: rgba(255,255,255,0.25);
       color: white;
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -195,7 +195,7 @@
       font-size: 1rem;
     }
 
-    /* === STATUS (BOLINHA) === */
+    /* === STATUS === */
     .bolinha-ativa, .bolinha-inativa {
       position: absolute;
       bottom: 10px;
@@ -265,16 +265,15 @@
 
     /* === Offline (inativo) === */
     .inativo {
-      opacity: 0.4;
+      opacity: 0.45;
       pointer-events: none;
-      filter: grayscale(0.6);
+      filter: grayscale(0.7);
     }
 
     @media (max-width: 600px) {
-      .vendedor-card { width: 92%; }
-      .foto-container { width: 65px; height: 65px; }
-      .icone-produto { width: 60px; height: 60px; }
-      .btn-contador { width: 42px; height: 42px; }
+      .vendedor-card { width: 90%; }
+      .foto-container { width: 80px; height: 80px; }
+      .btn-contador { width: 48px; height: 48px; font-size: 1.5rem; }
     }
   </style>
 </head>
