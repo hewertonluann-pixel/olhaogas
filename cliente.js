@@ -1,4 +1,3 @@
-// Importa Firebase e Firestore
 import { db } from "./firebase.js";
 import {
   collection,
@@ -11,15 +10,21 @@ const contadorCarrinho = document.getElementById("contadorCarrinho");
 
 let totalItens = 0;
 
+// Atualiza contador e visibilidade do carrinho
 function atualizarCarrinho() {
-  contadorCarrinho.textContent = totalItens;
-  carrinhoFlutuante.style.display = totalItens > 0 ? "flex" : "none";
+  if (totalItens > 0) {
+    contadorCarrinho.textContent = totalItens;
+    carrinhoFlutuante.style.display = "flex";
+  } else {
+    carrinhoFlutuante.style.display = "none";
+  }
 }
 
 carrinhoFlutuante.addEventListener("click", () => {
   window.location.href = "pedidos.html";
 });
 
+// === LISTA DE VENDEDORES ===
 onSnapshot(collection(db, "usuarios"), (snapshot) => {
   lista.innerHTML = "";
   snapshot.forEach((docSnap) => {
@@ -29,8 +34,6 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
       const precoGas = parseFloat(v.produtos?.gas?.preco || 0);
       const precoAgua = parseFloat(v.produtos?.agua?.preco || 0);
       const media = parseFloat(v.reputacao?.media || 0);
-
-      // gera as estrelas visuais conforme a média (0 a 5)
       const estrelas = gerarEstrelas(media);
 
       const card = document.createElement("div");
@@ -45,27 +48,27 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
           ${v.produtos?.gas?.ativo ? `
             <div class="produto" data-tipo="gas">
               <img src="imagens/gas.png" class="icone-produto" alt="Gás">
+              <span class="preco-canto">R$ ${precoGas}</span>
               <div class="acoes">
                 <button class="btn-contador menos">−</button>
                 <span class="contador">0</span>
                 <button class="btn-contador mais">+</button>
               </div>
-              <span class="preco">R$ ${precoGas}</span>
             </div>` : ""}
 
           ${v.produtos?.agua?.ativo ? `
             <div class="produto" data-tipo="agua">
               <img src="imagens/agua.png" class="icone-produto" alt="Água">
+              <span class="preco-canto">R$ ${precoAgua}</span>
               <div class="acoes">
                 <button class="btn-contador menos">−</button>
                 <span class="contador">0</span>
                 <button class="btn-contador mais">+</button>
               </div>
-              <span class="preco">R$ ${precoAgua}</span>
             </div>` : ""}
-
-          <p style="margin-top:6px;font-size:0.9rem;">${ativo ? "🟢 Ativo" : "🔴 Inativo"}</p>
         </div>
+
+        ${ativo ? `<div class="bolinha-ativa"></div>` : ""}
       `;
 
       if (!ativo) {
@@ -73,6 +76,7 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
         card.style.pointerEvents = "none";
       }
 
+      // Controle dos botões + e –
       const botoes = card.querySelectorAll(".btn-contador");
       botoes.forEach(btn => {
         btn.addEventListener("click", () => {
