@@ -8,13 +8,9 @@ const lista = document.getElementById("lista-vendedores");
 const carrinhoFlutuante = document.getElementById("carrinhoFlutuante");
 const contadorCarrinho = document.getElementById("contadorCarrinho");
 
-// Carrinho inicia oculto
 let totalItens = 0;
-carrinhoFlutuante.style.display = "none";
-
 let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
 
-// Atualiza o contador e visibilidade do carrinho
 function atualizarCarrinho() {
   if (totalItens > 0) {
     contadorCarrinho.textContent = totalItens;
@@ -28,7 +24,6 @@ carrinhoFlutuante.addEventListener("click", () => {
   window.location.href = "pedidos.html";
 });
 
-// === LISTA DE VENDEDORES ===
 onSnapshot(collection(db, "usuarios"), (snapshot) => {
   lista.innerHTML = "";
   const vendedores = [];
@@ -60,53 +55,48 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
     card.className = "vendedor-card";
 
     card.innerHTML = `
-      <div class="vendedor-topo">
-        <div class="foto-container">
-          <img src="${v.foto || 'https://via.placeholder.com/90'}" class="foto-vendedor" alt="foto">
-          <div class="favorito" data-id="${v.id}">${isFav ? "❤️" : "🤍"}</div>
-          ${ativo ? `<div class="bolinha-ativa"></div>` : ""}
-        </div>
-        <div class="vendedor-detalhes">
-          <h3>${v.nome}</h3>
-          <div class="estrelas">${estrelas}</div>
+      <div class="coluna-foto">
+        <img src="${v.foto || 'https://via.placeholder.com/90'}" alt="foto">
+        <div class="favorito ${isFav ? 'ativo' : ''}" data-id="${v.id}">
+          ${isFav ? '❤️' : '🤍'}
         </div>
       </div>
-
-      <div class="produtos">
-        ${v.produtos?.gas?.ativo ? `
-          <div class="produto" data-tipo="gas">
-            <div class="preco-faixa">R$ ${precoGas}</div>
-            <div class="linha-produto">
-              <img src="imagens/gas.png" class="icone-produto" alt="Gás">
-              <div class="acoes">
-                <button class="btn-contador menos">➖</button>
-                <span class="contador">0</span>
-                <button class="btn-contador mais">➕</button>
+      <div class="coluna-info">
+        <h3>${v.nome}</h3>
+        <div class="estrelas">${estrelas}</div>
+        <div class="produtos">
+          ${v.produtos?.gas?.ativo ? `
+            <div class="produto" data-tipo="gas">
+              <div class="preco-faixa">R$ ${precoGas.toFixed(2)}</div>
+              <div class="linha-produto">
+                <img src="imagens/gas.png" class="icone-produto" alt="Gás">
+                <div class="acoes">
+                  <button class="btn-contador menos">➖</button>
+                  <span class="contador">0</span>
+                  <button class="btn-contador mais">➕</button>
+                </div>
               </div>
-            </div>
-          </div>` : ""}
-        ${v.produtos?.agua?.ativo ? `
-          <div class="produto" data-tipo="agua">
-            <div class="preco-faixa">R$ ${precoAgua}</div>
-            <div class="linha-produto">
-              <img src="imagens/agua.png" class="icone-produto" alt="Água">
-              <div class="acoes">
-                <button class="btn-contador menos">➖</button>
-                <span class="contador">0</span>
-                <button class="btn-contador mais">➕</button>
+            </div>` : ""}
+          ${v.produtos?.agua?.ativo ? `
+            <div class="produto" data-tipo="agua">
+              <div class="preco-faixa">R$ ${precoAgua.toFixed(2)}</div>
+              <div class="linha-produto">
+                <img src="imagens/agua.png" class="icone-produto" alt="Água">
+                <div class="acoes">
+                  <button class="btn-contador menos">➖</button>
+                  <span class="contador">0</span>
+                  <button class="btn-contador mais">➕</button>
+                </div>
               </div>
-            </div>
-          </div>` : ""}
+            </div>` : ""}
+        </div>
       </div>
+      ${ativo
+        ? `<div class="bolinha-ativa"></div>`
+        : `<div class="bolinha-inativa"></div>`}
     `;
 
-    // Se o vendedor estiver inativo
-    if (!ativo) {
-      card.style.opacity = "0.5";
-      card.style.pointerEvents = "none";
-    }
-
-    // Controle dos botões + e −
+    // Controle de contador
     card.querySelectorAll(".btn-contador").forEach(btn => {
       btn.addEventListener("click", () => {
         const produto = btn.closest(".produto");
@@ -126,16 +116,20 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
       });
     });
 
-    // Favoritar
-    card.querySelector(".favorito").addEventListener("click", (e) => {
+    // Favoritar vendedor
+    const coracao = card.querySelector(".favorito");
+    coracao.addEventListener("click", (e) => {
       const id = e.currentTarget.dataset.id;
       if (favoritos.includes(id)) {
         favoritos = favoritos.filter(x => x !== id);
+        coracao.classList.remove("ativo");
+        coracao.textContent = "🤍";
       } else {
         favoritos.push(id);
+        coracao.classList.add("ativo");
+        coracao.textContent = "❤️";
       }
       localStorage.setItem("favoritos", JSON.stringify(favoritos));
-      onSnapshot(collection(db, "usuarios"), () => {}); // força recarregar visual
     });
 
     lista.appendChild(card);
