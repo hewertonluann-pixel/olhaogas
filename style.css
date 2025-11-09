@@ -525,3 +525,97 @@ button:hover { background: #003580; }
 #carrinhoFlutuante {
   display: none;
 }
+.estrelas {
+  display: flex;
+  gap: 2px;
+  margin: 2px 0 8px;
+  font-size: 1.1rem;
+  color: #ffd700;
+}
+.estrela.vazia {
+  opacity: 0.5;
+}
+
+/* PRODUTO */
+.produto {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+.icone-produto {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-bottom: 6px;
+}
+
+/* Retângulo do preço acima do produto */
+.preco-canto {
+  align-self: flex-end;
+  background: rgba(255,255,255,0.25);
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 0.85rem;
+  color: white;
+  font-weight: 600;
+  margin-bottom: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Ações (botões e contador) */
+.acoes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-contador {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  font-size: 1rem;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+.btn-contador:hover {
+  background: rgba(255,255,255,0.5);
+  transform: scale(1.1);
+}
+
+.contador {
+  min-width: 22px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Bolinha verde */
+.bolinha-ativa {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 12px;
+  height: 12px;
+  background: #00ff99;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #00ff99;
+}
+
+/* Oculta carrinho vazio */
+#carrinhoFlutuante {
+  display: none;
+}

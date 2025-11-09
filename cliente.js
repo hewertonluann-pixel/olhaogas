@@ -47,23 +47,23 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
 
           ${v.produtos?.gas?.ativo ? `
             <div class="produto" data-tipo="gas">
+              <div class="preco-canto">R$ ${precoGas}</div>
               <img src="imagens/gas.png" class="icone-produto" alt="Gás">
-              <span class="preco-canto">R$ ${precoGas}</span>
               <div class="acoes">
-                <button class="btn-contador menos">−</button>
+                <button class="btn-contador menos">➖</button>
                 <span class="contador">0</span>
-                <button class="btn-contador mais">+</button>
+                <button class="btn-contador mais">➕</button>
               </div>
             </div>` : ""}
 
           ${v.produtos?.agua?.ativo ? `
             <div class="produto" data-tipo="agua">
+              <div class="preco-canto">R$ ${precoAgua}</div>
               <img src="imagens/agua.png" class="icone-produto" alt="Água">
-              <span class="preco-canto">R$ ${precoAgua}</span>
               <div class="acoes">
-                <button class="btn-contador menos">−</button>
+                <button class="btn-contador menos">➖</button>
                 <span class="contador">0</span>
-                <button class="btn-contador mais">+</button>
+                <button class="btn-contador mais">➕</button>
               </div>
             </div>` : ""}
         </div>
