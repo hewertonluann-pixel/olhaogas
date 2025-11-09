@@ -1,18 +1,20 @@
 import { db } from "./firebase.js";
 import {
   collection,
-  onSnapshot,
-  updateDoc,
-  doc
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js";
 
 const lista = document.getElementById("lista-vendedores");
 const carrinhoFlutuante = document.getElementById("carrinhoFlutuante");
 const contadorCarrinho = document.getElementById("contadorCarrinho");
 
+// Carrinho inicia oculto
 let totalItens = 0;
-let vendedoresFavoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+carrinhoFlutuante.style.display = "none";
 
+let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+
+// Atualiza o contador e visibilidade do carrinho
 function atualizarCarrinho() {
   if (totalItens > 0) {
     contadorCarrinho.textContent = totalItens;
@@ -26,6 +28,7 @@ carrinhoFlutuante.addEventListener("click", () => {
   window.location.href = "pedidos.html";
 });
 
+// === LISTA DE VENDEDORES ===
 onSnapshot(collection(db, "usuarios"), (snapshot) => {
   lista.innerHTML = "";
   const vendedores = [];
@@ -39,70 +42,71 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
 
   // Ordena: favoritos > ativos > inativos
   vendedores.sort((a, b) => {
-    const favA = vendedoresFavoritos.includes(a.id);
-    const favB = vendedoresFavoritos.includes(b.id);
+    const favA = favoritos.includes(a.id);
+    const favB = favoritos.includes(b.id);
     if (favA !== favB) return favB - favA;
     return (b.status === true) - (a.status === true);
   });
 
-  // Monta cada card
   vendedores.forEach((v) => {
     const ativo = v.status === true || v.status === "ativo";
     const precoGas = parseFloat(v.produtos?.gas?.preco || 0);
     const precoAgua = parseFloat(v.produtos?.agua?.preco || 0);
     const media = parseFloat(v.reputacao?.media || 0);
     const estrelas = gerarEstrelas(media);
-    const isFav = vendedoresFavoritos.includes(v.id);
+    const isFav = favoritos.includes(v.id);
 
     const card = document.createElement("div");
     card.className = "vendedor-card";
 
     card.innerHTML = `
-      <div class="favorito" data-id="${v.id}">
-        ${isFav ? "❤️" : "🤍"}
-      </div>
-      <img src="${v.foto || 'https://via.placeholder.com/70'}" class="foto-vendedor" alt="foto">
-      <div class="vendedor-info">
-        <h3>${v.nome}</h3>
-        <div class="estrelas">${estrelas}</div>
-
-        <div class="produtos">
-          ${v.produtos?.gas?.ativo ? `
-            <div class="produto" data-tipo="gas">
-              <div class="preco-faixa">R$ ${precoGas}</div>
-              <div class="linha-produto">
-                <img src="imagens/gas.png" class="icone-produto" alt="Gás">
-                <div class="acoes">
-                  <button class="btn-contador menos">➖</button>
-                  <span class="contador">0</span>
-                  <button class="btn-contador mais">➕</button>
-                </div>
-              </div>
-            </div>` : ""}
-
-          ${v.produtos?.agua?.ativo ? `
-            <div class="produto" data-tipo="agua">
-              <div class="preco-faixa">R$ ${precoAgua}</div>
-              <div class="linha-produto">
-                <img src="imagens/agua.png" class="icone-produto" alt="Água">
-                <div class="acoes">
-                  <button class="btn-contador menos">➖</button>
-                  <span class="contador">0</span>
-                  <button class="btn-contador mais">➕</button>
-                </div>
-              </div>
-            </div>` : ""}
+      <div class="vendedor-topo">
+        <div class="foto-container">
+          <img src="${v.foto || 'https://via.placeholder.com/90'}" class="foto-vendedor" alt="foto">
+          <div class="favorito" data-id="${v.id}">${isFav ? "❤️" : "🤍"}</div>
+          ${ativo ? `<div class="bolinha-ativa"></div>` : ""}
+        </div>
+        <div class="vendedor-detalhes">
+          <h3>${v.nome}</h3>
+          <div class="estrelas">${estrelas}</div>
         </div>
       </div>
-      ${ativo ? `<div class="bolinha-ativa"></div>` : ""}
+
+      <div class="produtos">
+        ${v.produtos?.gas?.ativo ? `
+          <div class="produto" data-tipo="gas">
+            <div class="preco-faixa">R$ ${precoGas}</div>
+            <div class="linha-produto">
+              <img src="imagens/gas.png" class="icone-produto" alt="Gás">
+              <div class="acoes">
+                <button class="btn-contador menos">➖</button>
+                <span class="contador">0</span>
+                <button class="btn-contador mais">➕</button>
+              </div>
+            </div>
+          </div>` : ""}
+        ${v.produtos?.agua?.ativo ? `
+          <div class="produto" data-tipo="agua">
+            <div class="preco-faixa">R$ ${precoAgua}</div>
+            <div class="linha-produto">
+              <img src="imagens/agua.png" class="icone-produto" alt="Água">
+              <div class="acoes">
+                <button class="btn-contador menos">➖</button>
+                <span class="contador">0</span>
+                <button class="btn-contador mais">➕</button>
+              </div>
+            </div>
+          </div>` : ""}
+      </div>
     `;
 
+    // Se o vendedor estiver inativo
     if (!ativo) {
       card.style.opacity = "0.5";
       card.style.pointerEvents = "none";
     }
 
-    // Controle + / −
+    // Controle dos botões + e −
     card.querySelectorAll(".btn-contador").forEach(btn => {
       btn.addEventListener("click", () => {
         const produto = btn.closest(".produto");
@@ -122,16 +126,16 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
       });
     });
 
-    // Favoritar vendedor
+    // Favoritar
     card.querySelector(".favorito").addEventListener("click", (e) => {
       const id = e.currentTarget.dataset.id;
-      if (vendedoresFavoritos.includes(id)) {
-        vendedoresFavoritos = vendedoresFavoritos.filter(x => x !== id);
+      if (favoritos.includes(id)) {
+        favoritos = favoritos.filter(x => x !== id);
       } else {
-        vendedoresFavoritos.push(id);
+        favoritos.push(id);
       }
-      localStorage.setItem("favoritos", JSON.stringify(vendedoresFavoritos));
-      onSnapshot(collection(db, "usuarios"), () => {}); // Força recarregar visual
+      localStorage.setItem("favoritos", JSON.stringify(favoritos));
+      onSnapshot(collection(db, "usuarios"), () => {}); // força recarregar visual
     });
 
     lista.appendChild(card);
