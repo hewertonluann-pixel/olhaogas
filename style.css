@@ -340,3 +340,28 @@ button:hover {
   .icone-produto { width: 55px; height: 55px; }
   .btn-contador { width: 32px; height: 32px; }
 }
+
+
+.btn-pagar {
+  background: #00ff99;
+  color: #004aad;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-pagar:hover { background: #00e589; }
+
+.btn-cancelar {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-cancelar:hover { background: #e63939; }

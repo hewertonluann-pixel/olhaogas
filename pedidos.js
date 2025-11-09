@@ -57,6 +57,8 @@ function traduzirStatus(status) {
 
 function mostrarDetalhes(p) {
   modal.style.display = "flex";
+
+  // conteúdo base
   infoPedido.innerHTML = `
     <p><strong>Vendedor:</strong> ${p.nomeVendedor}</p>
     <p><strong>Itens:</strong></p>
@@ -65,6 +67,52 @@ function mostrarDetalhes(p) {
     <p><strong>Total:</strong> R$ ${p.totalPedido.toFixed(2)}</p>
     <p><strong>Status:</strong> ${traduzirStatus(p.statusPedido)}</p>
     <p><strong>Pagamento:</strong> ${p.statusPagamento}</p>
-    <button style="background:#25D366;color:white;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;" onclick="window.open('https://wa.me/55XXXXXXXXXX','_blank')">📞 Contatar vendedor</button>
+    <button style="background:#25D366;color:white;border:none;border-radius:8px;padding:8px 12px;margin-top:8px;cursor:pointer;" onclick="window.open('https://wa.me/55XXXXXXXXXX','_blank')">📞 Contatar vendedor</button>
   `;
+
+  // se o pedido ainda não foi pago, mostra opções de ação
+  if (p.statusPedido === "pendente" && p.statusPagamento !== "pago") {
+    const btnPagar = document.createElement("button");
+    btnPagar.textContent = "💳 Pagar agora";
+    btnPagar.style = `
+      background:#00ff99;
+      color:#004aad;
+      border:none;
+      border-radius:8px;
+      padding:8px 12px;
+      font-weight:600;
+      cursor:pointer;
+      margin-top:12px;
+      margin-right:8px;
+    `;
+    btnPagar.onclick = () => {
+      // redireciona com ID do pedido
+      localStorage.setItem("pedidoSelecionado", JSON.stringify(p));
+      window.location.href = "pagamento.html";
+    };
+
+    const btnCancelar = document.createElement("button");
+    btnCancelar.textContent = "❌ Cancelar pedido";
+    btnCancelar.style = `
+      background:#ff4d4d;
+      color:white;
+      border:none;
+      border-radius:8px;
+      padding:8px 12px;
+      font-weight:600;
+      cursor:pointer;
+      margin-top:12px;
+    `;
+    btnCancelar.onclick = async () => {
+      if (confirm("Tem certeza que deseja cancelar este pedido?")) {
+        await deleteDoc(doc(db, "pedidos", p.id)); // remove do Firestore
+        alert("Pedido cancelado com sucesso!");
+        modal.style.display = "none";
+      }
+    };
+
+    infoPedido.appendChild(btnPagar);
+    infoPedido.appendChild(btnCancelar);
+  }
 }
+
