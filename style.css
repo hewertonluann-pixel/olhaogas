@@ -619,3 +619,120 @@ button:hover { background: #003580; }
 #carrinhoFlutuante {
   display: none;
 }
+
+.vendedor-card {
+  position: relative;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 15px;
+  width: 260px;
+  text-align: center;
+  color: white;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+  transition: transform 0.3s, background 0.3s;
+}
+.vendedor-card:hover {
+  transform: translateY(-4px);
+  background: rgba(255,255,255,0.18);
+}
+
+.favorito {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 1.4rem;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s;
+}
+.favorito:hover {
+  transform: scale(1.2);
+}
+
+.estrelas {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  font-size: 1.1rem;
+  color: #ffd700;
+  margin-bottom: 8px;
+}
+
+.produtos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.produto {
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 8px;
+  position: relative;
+}
+
+.preco-faixa {
+  position: relative;
+  top: -4px;
+  text-align: right;
+  font-size: 0.85rem;
+  color: #fff;
+  opacity: 0.85;
+  font-weight: 600;
+}
+
+.linha-produto {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.icone-produto {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-contador {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  font-size: 1.2rem;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+.btn-contador:hover {
+  background: rgba(255,255,255,0.4);
+  transform: scale(1.05);
+}
+
+.contador {
+  width: 22px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.bolinha-ativa {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 12px;
+  height: 12px;
+  background: #00ff99;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #00ff99;
+}
