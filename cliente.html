@@ -3,30 +3,301 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cliente — Olha o Gás 💨</title>
+  <title>Olha o Gás 💨 — Página do Cliente</title>
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #004aad, #00bcd4);
+      min-height: 100vh;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      width: 100%;
+      text-align: center;
+      padding: 20px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    main {
+      width: 100%;
+      max-width: 900px;
+      padding: 30px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .topo-cliente {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 850px;
+      padding: 0 10px;
+    }
+
+    .topo-cliente h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    /* === Cards de Vendedores === */
+    .lista-vendedores {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px;
+      padding: 10px;
+    }
+
+    .vendedor-card {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 12px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      width: 310px;
+      padding: 14px;
+      position: relative;
+      color: white;
+      transition: transform 0.3s, background 0.3s;
+    }
+
+    .vendedor-card:hover {
+      transform: translateY(-4px);
+      background: rgba(255,255,255,0.25);
+    }
+
+    .coluna-foto {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      flex-shrink: 0;
+    }
+
+    .coluna-foto img {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .favorito {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      font-size: 1.3rem;
+      color: rgba(255,255,255,0.8);
+      cursor: pointer;
+      transition: transform 0.2s, color 0.3s;
+    }
+
+    .favorito:hover { transform: scale(1.15); }
+    .favorito.ativo { color: red; }
+
+    .coluna-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-left: 6px;
+    }
+
+    .coluna-info h3 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .estrelas {
+      display: flex;
+      gap: 2px;
+      color: #ffd700;
+      font-size: 1.1rem;
+      margin: 4px 0 6px;
+    }
+
+    .estrela.vazia { opacity: 0.5; }
+
+    /* === Produtos === */
+    .produtos {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .produto {
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 6px 8px;
+      transition: background 0.3s;
+    }
+
+    .produto:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .preco-faixa {
+      text-align: right;
+      font-size: 0.8rem;
+      opacity: 0.9;
+      margin-bottom: 3px;
+      font-weight: 600;
+    }
+
+    .linha-produto {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .icone-produto {
+      width: 65px;
+      height: 65px;
+      object-fit: contain;
+    }
+
+    .acoes {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-contador {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      color: white;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .btn-contador:hover {
+      background: rgba(255,255,255,0.4);
+      transform: scale(1.1);
+    }
+
+    .contador {
+      width: 26px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    /* === Status (bolinha) === */
+    .bolinha-ativa, .bolinha-inativa {
+      position: absolute;
+      bottom: 8px;
+      right: 10px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      box-shadow: 0 0 8px rgba(0,0,0,0.3);
+    }
+
+    .bolinha-ativa {
+      background: #00ff99;
+      box-shadow: 0 0 8px #00ff99;
+      animation: pulse 1.8s infinite ease-in-out;
+    }
+
+    .bolinha-inativa {
+      background: #ff4d4d;
+      box-shadow: 0 0 8px #ff4d4d;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* === Carrinho Flutuante === */
+    #carrinhoFlutuante {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #00ff99;
+      color: #004aad;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 1.8rem;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #carrinhoFlutuante:hover { transform: scale(1.1); }
+
+    #contadorCarrinho {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      background: #ff3b3b;
+      color: white;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      padding: 2px 6px;
+      font-weight: 700;
+    }
+
+    footer {
+      text-align: center;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.85rem;
+      margin: 30px 0;
+    }
+
+    @media (max-width: 600px) {
+      .vendedor-card { width: 92%; }
+      .coluna-foto { width: 80px; height: 80px; }
+      .icone-produto { width: 55px; height: 55px; }
+      .btn-contador { width: 32px; height: 32px; }
+    }
+  </style>
 </head>
+
 <body>
-  <header>
-    👋 Bem-vindo(a) ao Olha o Gás 💨
-  </header>
+  <header>🛍️ Catálogo de Vendedores</header>
 
   <main>
     <div class="topo-cliente">
-      <h2>Vendedores disponíveis</h2>
-      <button id="carrinhoFlutuante">
-        🛒 <span id="contadorCarrinho">0</span>
-      </button>
+      <h2>Encontre seu gás ou água</h2>
     </div>
 
-    <section id="lista-vendedores" class="lista-vendedores">
-      <!-- Cards gerados dinamicamente -->
-    </section>
+    <section class="lista-vendedores" id="lista-vendedores"></section>
   </main>
 
-  <footer>
-    © 2025 Olha o Gás 💨 — Todos os direitos reservados.
-  </footer>
+  <button id="carrinhoFlutuante">
+    🛒 <span id="contadorCarrinho">0</span>
+  </button>
+
+  <footer>© 2025 Olha o Gás 💨 — Seu pedido em poucos cliques</footer>
 
   <script type="module" src="cliente.js"></script>
 </body>
