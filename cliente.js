@@ -31,7 +31,7 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
     }
   });
 
-  // Ordenar favoritos e status
+  // Ordena favoritos e status
   vendedores.sort((a, b) => {
     const favA = favoritos.includes(a.id);
     const favB = favoritos.includes(b.id);
@@ -47,46 +47,51 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
     const estrelas = gerarEstrelas(media);
     const isFav = favoritos.includes(v.id);
 
+    // === Card base ===
     const card = document.createElement("div");
     card.className = "vendedor-card";
+    if (!ativo) card.classList.add("inativo"); // adiciona classe visual e bloqueio
 
+    // === Estrutura visual ===
     card.innerHTML = `
-      <div class="coluna-foto">
-        <img src="${v.foto || 'https://via.placeholder.com/90'}" alt="foto">
-        <div class="favorito ${isFav ? 'ativo' : ''}" data-id="${v.id}">
-          ${isFav ? '❤️' : '🤍'}
+      <div class="vendedor-topo">
+        <div class="foto-container">
+          <img src="${v.foto || 'https://via.placeholder.com/90'}" alt="foto">
+          <div class="favorito ${isFav ? 'ativo' : ''}" data-id="${v.id}">
+            ${isFav ? '❤️' : '🤍'}
+          </div>
+        </div>
+        <div class="vendedor-info">
+          <h3>${v.nome}</h3>
+          <div class="estrelas">${estrelas}</div>
         </div>
       </div>
 
-      <div class="coluna-info">
-        <h3>${v.nome}</h3>
-        <div class="estrelas">${estrelas}</div>
-        <div class="produtos">
-          ${v.produtos?.gas?.ativo ? `
-            <div class="produto" data-tipo="gas">
-              <div class="preco-faixa">R$ ${precoGas.toFixed(2)}</div>
-              <div class="linha-produto">
-                <img src="imagens/gas.png" class="icone-produto" alt="Gás">
-                <div class="acoes">
-                  <button class="btn-contador menos">−</button>
-                  <span class="contador">0</span>
-                  <button class="btn-contador mais">+</button>
-                </div>
+      <div class="produtos">
+        ${v.produtos?.gas?.ativo ? `
+          <div class="produto" data-tipo="gas">
+            <div class="preco-faixa">R$ ${precoGas.toFixed(2)}</div>
+            <div class="linha-produto">
+              <img src="imagens/gas.png" class="icone-produto" alt="Gás">
+              <div class="acoes">
+                <button class="btn-contador menos">−</button>
+                <span class="contador">0</span>
+                <button class="btn-contador mais">＋</button>
               </div>
-            </div>` : ""}
-          ${v.produtos?.agua?.ativo ? `
-            <div class="produto" data-tipo="agua">
-              <div class="preco-faixa">R$ ${precoAgua.toFixed(2)}</div>
-              <div class="linha-produto">
-                <img src="imagens/agua.png" class="icone-produto" alt="Água">
-                <div class="acoes">
-                  <button class="btn-contador menos">−</button>
-                  <span class="contador">0</span>
-                  <button class="btn-contador mais">+</button>
-                </div>
+            </div>
+          </div>` : ""}
+        ${v.produtos?.agua?.ativo ? `
+          <div class="produto" data-tipo="agua">
+            <div class="preco-faixa">R$ ${precoAgua.toFixed(2)}</div>
+            <div class="linha-produto">
+              <img src="imagens/agua.png" class="icone-produto" alt="Água">
+              <div class="acoes">
+                <button class="btn-contador menos">−</button>
+                <span class="contador">0</span>
+                <button class="btn-contador mais">＋</button>
               </div>
-            </div>` : ""}
-        </div>
+            </div>
+          </div>` : ""}
       </div>
 
       ${ativo
@@ -94,7 +99,18 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
         : `<div class="bolinha-inativa"></div>`}
     `;
 
-    // Incremento/decremento
+    // === Desativa interação se estiver offline ===
+    if (!ativo) {
+      card.querySelectorAll("button, .favorito").forEach(el => {
+        el.disabled = true;
+        el.style.pointerEvents = "none";
+        el.style.opacity = "0.6";
+      });
+      lista.appendChild(card);
+      return; // pula lógica de interação abaixo
+    }
+
+    // === Eventos apenas para vendedores online ===
     card.querySelectorAll(".btn-contador").forEach(btn => {
       btn.addEventListener("click", () => {
         const produto = btn.closest(".produto");
@@ -133,6 +149,7 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
     lista.appendChild(card);
   });
 });
+
 
 function gerarEstrelas(media) {
   let html = "";
