@@ -127,18 +127,21 @@ button:hover {
   padding: 20px;
 }
 
-/* CARD DE VENDEDOR — DUAS COLUNAS */
+/* =========================================================
+   CARD DE VENDEDOR — DUAS COLUNAS
+   ========================================================= */
 .vendedor-card {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 12px;
   background: rgba(255,255,255,0.12);
   backdrop-filter: blur(10px);
   border-radius: 16px;
   box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-  width: 310px;
-  padding: 12px;
+  width: 320px;
+  padding: 14px;
   position: relative;
   color: white;
   transition: transform 0.3s, background 0.3s;
@@ -148,7 +151,7 @@ button:hover {
   background: rgba(255,255,255,0.18);
 }
 
-/* FOTO + FAVORITO */
+/* ==== COLUNA FOTO ==== */
 .coluna-foto {
   position: relative;
   width: 90px;
@@ -174,13 +177,13 @@ button:hover {
 .favorito:hover { transform: scale(1.15); }
 .favorito.ativo { color: red; }
 
-/* COLUNA DE INFORMAÇÕES */
+/* ==== COLUNA INFORMAÇÕES ==== */
 .coluna-info {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   flex: 1;
-  padding-left: 10px;
+  padding-left: 4px;
 }
 .coluna-info h3 {
   margin: 0;
@@ -196,7 +199,7 @@ button:hover {
 }
 .estrela.vazia { opacity: 0.5; }
 
-/* PRODUTOS */
+/* ==== PRODUTOS ==== */
 .produtos {
   display: flex;
   flex-direction: column;
@@ -220,8 +223,8 @@ button:hover {
   align-items: center;
 }
 .icone-produto {
-  width: 60px;
-  height: 60px;
+  width: 65px;
+  height: 65px;
   object-fit: contain;
 }
 .acoes {
@@ -251,15 +254,14 @@ button:hover {
   font-weight: 600;
 }
 
-/* STATUS */
+/* ==== STATUS ==== */
 .bolinha-ativa, .bolinha-inativa {
   position: absolute;
-  bottom: 8px;
+  bottom: 10px;
   right: 10px;
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  box-shadow: 0 0 8px rgba(0,0,0,0.3);
 }
 .bolinha-ativa {
   background: #00ff99;
@@ -269,16 +271,6 @@ button:hover {
   background: #ff4d4d;
   box-shadow: 0 0 8px #ff4d4d;
 }
-
-/* RESPONSIVO */
-@media (max-width: 600px) {
-  .vendedor-card { width: 92%; flex-direction: row; }
-  .coluna-foto { width: 80px; height: 80px; }
-  .icone-produto { width: 55px; height: 55px; }
-  .btn-contador { width: 32px; height: 32px; }
-}
-
-
 
 /* =========================================================
    CARRINHO FLUTUANTE
@@ -293,7 +285,7 @@ button:hover {
   width: 60px;
   height: 60px;
   font-size: 1.8rem;
-  display: none; /* Oculto até ter produtos */
+  display: none;
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
@@ -316,7 +308,7 @@ button:hover {
 }
 
 /* =========================================================
-   PÁGINAS VENDEDOR / GERENTE / PAGAMENTO (básico)
+   PÁGINAS VENDEDOR / GERENTE / PAGAMENTO
    ========================================================= */
 .painel-vendedor, .painel-gerente, .pagamento {
   padding: 25px;
@@ -343,8 +335,8 @@ button:hover {
    RESPONSIVIDADE
    ========================================================= */
 @media (max-width: 600px) {
-  .vendedor-card { width: 92%; }
-  .foto-container { width: 80px; height: 80px; }
-  .icone-produto { width: 60px; height: 60px; }
+  .vendedor-card { width: 92%; flex-direction: row; }
+  .coluna-foto { width: 80px; height: 80px; }
+  .icone-produto { width: 55px; height: 55px; }
   .btn-contador { width: 32px; height: 32px; }
 }

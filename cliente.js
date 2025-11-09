@@ -12,12 +12,8 @@ let totalItens = 0;
 let favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
 
 function atualizarCarrinho() {
-  if (totalItens > 0) {
-    contadorCarrinho.textContent = totalItens;
-    carrinhoFlutuante.style.display = "flex";
-  } else {
-    carrinhoFlutuante.style.display = "none";
-  }
+  contadorCarrinho.textContent = totalItens;
+  carrinhoFlutuante.style.display = totalItens > 0 ? "flex" : "none";
 }
 
 carrinhoFlutuante.addEventListener("click", () => {
@@ -35,7 +31,7 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
     }
   });
 
-  // Ordena: favoritos > ativos > inativos
+  // Ordenar favoritos e status
   vendedores.sort((a, b) => {
     const favA = favoritos.includes(a.id);
     const favB = favoritos.includes(b.id);
@@ -61,6 +57,7 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
           ${isFav ? '❤️' : '🤍'}
         </div>
       </div>
+
       <div class="coluna-info">
         <h3>${v.nome}</h3>
         <div class="estrelas">${estrelas}</div>
@@ -71,9 +68,9 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
               <div class="linha-produto">
                 <img src="imagens/gas.png" class="icone-produto" alt="Gás">
                 <div class="acoes">
-                  <button class="btn-contador menos">➖</button>
+                  <button class="btn-contador menos">−</button>
                   <span class="contador">0</span>
-                  <button class="btn-contador mais">➕</button>
+                  <button class="btn-contador mais">+</button>
                 </div>
               </div>
             </div>` : ""}
@@ -83,20 +80,21 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
               <div class="linha-produto">
                 <img src="imagens/agua.png" class="icone-produto" alt="Água">
                 <div class="acoes">
-                  <button class="btn-contador menos">➖</button>
+                  <button class="btn-contador menos">−</button>
                   <span class="contador">0</span>
-                  <button class="btn-contador mais">➕</button>
+                  <button class="btn-contador mais">+</button>
                 </div>
               </div>
             </div>` : ""}
         </div>
       </div>
+
       ${ativo
         ? `<div class="bolinha-ativa"></div>`
         : `<div class="bolinha-inativa"></div>`}
     `;
 
-    // Controle de contador
+    // Incremento/decremento
     card.querySelectorAll(".btn-contador").forEach(btn => {
       btn.addEventListener("click", () => {
         const produto = btn.closest(".produto");
@@ -116,7 +114,7 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
       });
     });
 
-    // Favoritar vendedor
+    // Favoritar
     const coracao = card.querySelector(".favorito");
     coracao.addEventListener("click", (e) => {
       const id = e.currentTarget.dataset.id;
@@ -137,12 +135,11 @@ onSnapshot(collection(db, "usuarios"), (snapshot) => {
 });
 
 function gerarEstrelas(media) {
-  const total = 5;
-  let estrelasHTML = "";
-  for (let i = 1; i <= total; i++) {
-    estrelasHTML += i <= Math.round(media)
-      ? '<span class="estrela cheia">⭐</span>'
-      : '<span class="estrela vazia">☆</span>';
+  let html = "";
+  for (let i = 1; i <= 5; i++) {
+    html += i <= Math.round(media)
+      ? "<span class='estrela cheia'>⭐</span>"
+      : "<span class='estrela vazia'>☆</span>";
   }
-  return estrelasHTML;
+  return html;
 }
