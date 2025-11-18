@@ -1,8 +1,6 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
-import { User, SellerProfile, Order, UserRole, OrderStatus, SellerStatus, PaymentMethod, PaymentStatus, Announcement, AnnouncementTarget, NewSellerFormData } from './types';
-// FIX: Import `setDocument` to handle creating documents with a specific ID.
-import { onCollectionUpdate, updateDocument, addDocument, removeDocument, getAllUsers, setDocument } from './services/firestoreService';
+import { User, SellerProfile, Order, UserRole, OrderStatus, SellerStatus, PaymentMethod, PaymentStatus, Announcement, AnnouncementTarget, NewSellerFormData, UserProfileFormData } from './types';
+import { USERS, SELLERS, MANAGER, ORDERS, ALL_USERS } from './constants';
 
 import LoginScreen from './pages/LoginScreen';
 import ClientView from './pages/ClientView';
@@ -13,204 +11,203 @@ import { LogoIcon } from './components/Icons';
 function App() {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<User | SellerProfile | null>(null);
-  const [users, setUsers] = useState<(User | SellerProfile)[]>([]);
-  const [sellers, setSellers] = useState<SellerProfile[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [users, setUsers] = useState<(User | SellerProfile)[]>(ALL_USERS);
+  const [sellers, setSellers] = useState<SellerProfile[]>(SELLERS);
+  const [orders, setOrders] = useState<Order[]>(ORDERS);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 
   useEffect(() => {
-    // Escuta atualizações em tempo real das coleções do Firestore
-    const unsubscribeUsers = onCollectionUpdate<User | SellerProfile>('users', setUsers);
-    const unsubscribeSellers = onCollectionUpdate<SellerProfile>('sellers', setSellers);
-    const unsubscribeOrders = onCollectionUpdate<Order>('orders', setOrders);
-    const unsubscribeAnnouncements = onCollectionUpdate<Announcement>('announcements', setAnnouncements);
-    
-    // Simula um tempo de carregamento inicial para a UI não piscar
+    // Simula um tempo de carregamento inicial
     const timer = setTimeout(() => setLoading(false), 1500);
-
-    // Função de limpeza para parar de escutar quando o componente desmontar
-    return () => {
-      unsubscribeUsers();
-      unsubscribeSellers();
-      unsubscribeOrders();
-      unsubscribeAnnouncements();
-      clearTimeout(timer);
-    };
+    return () => clearTimeout(timer);
   }, []);
 
-  const handleLogin = useCallback(async (role: UserRole) => {
-    // No mundo real, a autenticação seria feita aqui.
-    // Para simulação, buscamos todos os usuários e pegamos o primeiro do perfil selecionado.
-    setLoading(true);
-    try {
-        const allUsers = await getAllUsers();
-        let userToLogin: User | SellerProfile | undefined;
-        
-        if (role === UserRole.CLIENT) userToLogin = allUsers.find(u => u.role === UserRole.CLIENT);
-        if (role === UserRole.SELLER) userToLogin = allUsers.find(u => u.role === UserRole.SELLER);
-        if (role === UserRole.MANAGER) userToLogin = allUsers.find(u => u.role === UserRole.MANAGER);
+  const handleLogin = useCallback((role: UserRole) => {
+    let userToLogin: User | SellerProfile | undefined;
+    
+    // Simulação de login: pega o primeiro usuário encontrado com o perfil
+    if (role === UserRole.CLIENT) userToLogin = users.find(u => u.role === UserRole.CLIENT);
+    if (role === UserRole.SELLER) userToLogin = users.find(s => s.role === UserRole.SELLER);
+    if (role === UserRole.MANAGER) userToLogin = users.find(u => u.role === UserRole.MANAGER);
 
-        if (userToLogin) {
-          setCurrentUser(userToLogin);
-        } else {
-          alert("Nenhum usuário com este perfil encontrado no banco de dados.");
-        }
-    } catch (error) {
-        console.error("Erro ao tentar fazer login:", error);
-        alert("Ocorreu um erro ao conectar com o banco de dados.");
-    } finally {
-        setLoading(false);
+    if (userToLogin) {
+      setCurrentUser(userToLogin);
+    } else {
+      alert("Nenhum usuário com este perfil encontrado.");
     }
-  }, []);
+  }, [users]);
 
   const handleLogout = useCallback(() => {
     setCurrentUser(null);
   }, []);
 
-  const handlePlaceOrder = useCallback(async (seller: SellerProfile, gasQuantity: number, waterQuantity: number, paymentMethod: PaymentMethod) => {
+  const handlePlaceOrder = useCallback((seller: SellerProfile, gasQuantity: number, waterQuantity: number, paymentMethod: PaymentMethod) => {
     if (!currentUser || currentUser.role !== UserRole.CLIENT) return;
     
     const paymentStatus: PaymentStatus = paymentMethod === 'Na Entrega' ? 'Pendente' : 'Pago';
-    
-    try {
-        if (gasQuantity > 0) {
-            const gasOrder = {
-                clientId: currentUser.id,
-                sellerId: seller.id,
-                status: OrderStatus.PENDING,
-                date: new Date().toISOString(),
-                quantity: gasQuantity,
-                product: 'Gás P13',
-                totalValue: seller.prices.gas * gasQuantity,
-                paymentMethod,
-                paymentStatus,
-            };
-            await addDocument('orders', gasOrder);
-        }
+    const newOrders: Order[] = [];
 
-        if (waterQuantity > 0) {
-            const waterOrder = {
-                clientId: currentUser.id,
-                sellerId: seller.id,
-                status: OrderStatus.PENDING,
-                date: new Date().toISOString(),
-                quantity: waterQuantity,
-                product: 'Água 20L',
-                totalValue: seller.prices.water * waterQuantity,
-                paymentMethod,
-                paymentStatus,
-            };
-             await addDocument('orders', waterOrder);
-        }
-        
-        const summary = [
-            gasQuantity > 0 ? `${gasQuantity}x Gás P13` : '',
-            waterQuantity > 0 ? `${waterQuantity}x Água 20L` : ''
-        ].filter(Boolean).join(' e ');
-        
-        alert(`Pedido de ${summary} para "${seller.name}" realizado com sucesso!`);
+    if (gasQuantity > 0) {
+      newOrders.push({
+        id: `order-gas-${Date.now()}`,
+        clientId: currentUser.id,
+        sellerId: seller.id,
+        status: OrderStatus.PENDING,
+        date: new Date().toISOString(),
+        quantity: gasQuantity,
+        product: 'Gás P13',
+        totalValue: seller.prices.gas * gasQuantity,
+        paymentMethod,
+        paymentStatus,
+      });
+    }
 
-    } catch (error) {
-        console.error("Erro ao criar pedido:", error);
-        alert("Não foi possível realizar o pedido. Tente novamente.");
+    if (waterQuantity > 0) {
+      newOrders.push({
+        id: `order-water-${Date.now()}`,
+        clientId: currentUser.id,
+        sellerId: seller.id,
+        status: OrderStatus.PENDING,
+        date: new Date().toISOString(),
+        quantity: waterQuantity,
+        product: 'Água 20L',
+        totalValue: seller.prices.water * waterQuantity,
+        paymentMethod,
+        paymentStatus,
+      });
+    }
+
+    if (newOrders.length > 0) {
+      setOrders(prev => [...prev, ...newOrders]);
+      const summary = [
+        gasQuantity > 0 ? `${gasQuantity}x Gás P13` : '',
+        waterQuantity > 0 ? `${waterQuantity}x Água 20L` : ''
+      ].filter(Boolean).join(' e ');
+      alert(`Pedido de ${summary} para "${seller.name}" realizado com sucesso!`);
     }
   }, [currentUser]);
 
-  const handleUpdateOrderStatus = useCallback(async (orderId: string, newStatus: OrderStatus) => {
-    try {
-        await updateDocument('orders', orderId, { status: newStatus });
-    } catch(e) {
-        console.error("Erro ao atualizar status do pedido:", e);
-    }
+  const handleUpdateOrderStatus = useCallback((orderId: string, newStatus: OrderStatus) => {
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
   }, []);
 
-  const handleRateOrder = useCallback(async (orderId: string, rating: number, comment: string) => {
-    try {
-        const orderToUpdate = orders.find(o => o.id === orderId);
-        if (!orderToUpdate) return;
-        
-        await updateDocument('orders', orderId, { rating, comment });
-        
-        // Recalcular a média de avaliação do vendedor
-        const sellerOrders = orders.filter(o => o.sellerId === orderToUpdate.sellerId && typeof o.rating === 'number');
-        // Adiciona a avaliação atual para o cálculo
-        const allRatings = [...sellerOrders.map(o => o.rating!), rating];
-        const totalRating = allRatings.reduce((sum, r) => sum + r, 0);
-        const newCount = allRatings.length;
-        const newAverage = newCount > 0 ? totalRating / newCount : 0;
-        
-        await updateDocument('sellers', orderToUpdate.sellerId, { rating: { average: newAverage, count: newCount } });
-        // O user (se for vendedor) também será atualizado pelo listener do Firestore
-    } catch(e) {
-        console.error("Erro ao avaliar pedido:", e);
+  const handleRateOrder = useCallback((orderId: string, rating: number, comment: string) => {
+    let sellerIdToUpdate: string | null = null;
+    
+    // Atualiza o pedido
+    setOrders(prevOrders => prevOrders.map(o => {
+      if (o.id === orderId) {
+        sellerIdToUpdate = o.sellerId;
+        return { ...o, rating, comment };
+      }
+      return o;
+    }));
+
+    // Atualiza a avaliação do vendedor
+    if (sellerIdToUpdate) {
+      const sellerOrders = orders.filter(o => o.sellerId === sellerIdToUpdate && (o.rating || o.id === orderId));
+      const allRatings = sellerOrders.map(o => o.id === orderId ? rating : o.rating!);
+      const totalRating = allRatings.reduce((sum, r) => sum + r, 0);
+      const newCount = allRatings.length;
+      const newAverage = newCount > 0 ? totalRating / newCount : 0;
+      
+      const updateRating = (s: SellerProfile) => ({ ...s, rating: { average: newAverage, count: newCount }});
+      
+      setSellers(prev => prev.map(s => s.id === sellerIdToUpdate ? updateRating(s) : s));
+      setUsers(prev => prev.map(u => u.id === sellerIdToUpdate ? updateRating(u as SellerProfile) : u));
     }
   }, [orders]);
 
 
-  const handleUpdateSellerStatus = useCallback(async (sellerId: string, newStatus: SellerStatus) => {
-    await updateDocument('sellers', sellerId, { status: newStatus });
-    await updateDocument('users', sellerId, { status: newStatus });
+  const handleUpdateSellerStatus = useCallback((sellerId: string, newStatus: SellerStatus) => {
+    const update = (s: SellerProfile) => ({ ...s, status: newStatus });
+    setSellers(prev => prev.map(s => s.id === sellerId ? update(s) : s));
+    setUsers(prev => prev.map(u => u.id === sellerId ? update(u as SellerProfile) : u));
   }, []);
 
-  const handleUpdateSellerInfo = useCallback(async (
+  const handleUpdateSellerInfo = useCallback((
     sellerId: string,
     newInfo: {
       prices: { gas: number; water: number };
       brands: { gas: string; water: string };
     }
   ) => {
-    await updateDocument('sellers', sellerId, newInfo);
-    await updateDocument('users', sellerId, newInfo);
+    const update = (s: SellerProfile) => ({ ...s, ...newInfo });
+    setSellers(prev => prev.map(s => s.id === sellerId ? update(s) : s));
+    setUsers(prev => prev.map(u => u.id === sellerId ? update(u as SellerProfile) : u));
     alert('Informações do produto atualizadas com sucesso!');
   }, []);
   
-  const handleUpdateSellerPhoto = useCallback(async (sellerId: string) => {
-    const newPhotoUrl = `https://picsum.photos/seed/${sellerId}${Date.now()}/200`;
-    await updateDocument('sellers', sellerId, { photoUrl: newPhotoUrl });
-    await updateDocument('users', sellerId, { photoUrl: newPhotoUrl });
-    
-    setCurrentUser(prevUser => {
-      if (prevUser && prevUser.id === sellerId) {
-        return { ...prevUser, photoUrl: newPhotoUrl };
-      }
-      return prevUser;
+  const handleUpdateUserPhoto = useCallback((userId: string, photoFile: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const newPhotoUrl = reader.result as string;
+      const update = (u: User | SellerProfile) => ({ ...u, photoUrl: newPhotoUrl });
+
+      setSellers(prev => prev.map(s => s.id === userId ? update(s) as SellerProfile : s));
+      setUsers(prev => prev.map(u => u.id === userId ? update(u) : u));
+      setCurrentUser(prevUser => prevUser && prevUser.id === userId ? update(prevUser) : prevUser);
+      alert('Foto de perfil atualizada com sucesso!');
+    };
+    reader.readAsDataURL(photoFile);
+  }, []);
+
+  const handleUpdateUserInfo = useCallback((userId: string, formData: UserProfileFormData) => {
+    const updateUser = (u: User | SellerProfile) => ({
+      ...u,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      address: {
+        ...u.address,
+        street: formData.address.street,
+        number: formData.address.number,
+        neighborhood: formData.address.neighborhood,
+      },
     });
+
+    setUsers(prev => prev.map(u => u.id === userId ? updateUser(u) : u));
+    setSellers(prev => prev.map(s => s.id === userId ? updateUser(s) as SellerProfile : s));
+    setCurrentUser(prevUser => prevUser && prevUser.id === userId ? updateUser(prevUser) : prevUser);
+    alert('Informações do perfil atualizadas com sucesso!');
   }, []);
 
-
-  const handleApproveSeller = useCallback(async (sellerId: string, approved: boolean) => {
-    await updateDocument('sellers', sellerId, { approved });
-    await updateDocument('users', sellerId, { approved });
+  const handleApproveSeller = useCallback((sellerId: string, approved: boolean) => {
+    const update = (s: SellerProfile) => ({ ...s, approved });
+    setSellers(prev => prev.map(s => s.id === sellerId ? update(s) : s));
+    setUsers(prev => prev.map(u => u.id === sellerId ? update(u as SellerProfile) : u));
   }, []);
 
-  const handleRemoveSeller = useCallback(async (sellerId: string) => {
+  const handleRemoveSeller = useCallback((sellerId: string) => {
     if (window.confirm("Tem certeza que deseja remover este vendedor? Esta ação é irreversível.")) {
-      await removeDocument('sellers', sellerId);
-      await removeDocument('users', sellerId);
+      setSellers(prev => prev.filter(s => s.id !== sellerId));
+      setUsers(prev => prev.filter(u => u.id !== sellerId));
     }
   }, []);
   
-  const handleSendAnnouncement = useCallback(async (message: string, target: AnnouncementTarget) => {
+  const handleSendAnnouncement = useCallback((message: string, target: AnnouncementTarget) => {
     if (!message.trim()) {
       alert("A mensagem do comunicado não pode estar vazia.");
       return;
     }
-    const newAnnouncement: Omit<Announcement, 'id'> = {
+    const newAnnouncement: Announcement = {
+      id: `announcement-${Date.now()}`,
       message,
       target,
       date: new Date().toISOString(),
     };
-    await addDocument('announcements', newAnnouncement);
+    setAnnouncements(prev => [newAnnouncement, ...prev]);
     alert(`Comunicado enviado para ${target}!`);
   }, []);
 
-  const handleSellerRegistration = useCallback(async (registrationData: { phone: string; gasBrand: string; waterBrand: string; }) => {
+  const handleSellerRegistration = useCallback((registrationData: { phone: string; gasBrand: string; waterBrand: string; }) => {
     if (!currentUser || currentUser.role !== UserRole.CLIENT) {
         alert("Ação não permitida.");
         return;
     }
 
-    const newSellerProfile: Omit<SellerProfile, 'id'> = {
+    const newSellerProfile: SellerProfile = {
+        id: `seller-${Date.now()}`,
         name: currentUser.name,
         email: currentUser.email,
         role: UserRole.SELLER,
@@ -224,17 +221,14 @@ function App() {
         rating: { average: 0, count: 0 },
     };
 
-    // Adiciona em ambas as coleções para consistência
-    const docRef = await addDocument('sellers', newSellerProfile);
-    // FIX: The name 'db' was not found. Replaced direct Firestore call
-    // with the `setDocument` service function to create a corresponding user document.
-    await setDocument('users', docRef.id, newSellerProfile);
-
+    setSellers(prev => [...prev, newSellerProfile]);
+    setUsers(prev => [...prev, newSellerProfile]);
     alert('Sua solicitação para se tornar um vendedor foi enviada! O gerente irá analisar seu cadastro.');
   }, [currentUser]);
 
-  const handleCreateSeller = useCallback(async (formData: NewSellerFormData) => {
-    const newSeller: Omit<SellerProfile, 'id'> = {
+  const handleCreateSeller = useCallback((formData: NewSellerFormData) => {
+    const newSeller: SellerProfile = {
+        id: `seller-created-${Date.now()}`,
         ...formData,
         role: UserRole.SELLER,
         photoUrl: `https://picsum.photos/seed/${formData.name.replace(/\s+/g, '').toLowerCase()}${Date.now()}/200`,
@@ -243,13 +237,8 @@ function App() {
         rating: { average: 0, count: 0 },
     };
 
-    const docRef = await addDocument('sellers', newSeller);
-    // Adiciona na coleção de users também com o mesmo ID
-    // FIX: Using `updateDocument` would fail for a new user. Replaced with
-    // `setDocument` to correctly create the new user document.
-    await setDocument('users', docRef.id, newSeller);
-
-
+    setSellers(prev => [...prev, newSeller]);
+    setUsers(prev => [...prev, newSeller]);
     alert(`Vendedor "${formData.name}" cadastrado com sucesso!`);
   }, []);
 
@@ -279,6 +268,8 @@ function App() {
             onPlaceOrder={handlePlaceOrder}
             onRateOrder={handleRateOrder}
             onRegisterSeller={handleSellerRegistration}
+            onUpdatePhoto={handleUpdateUserPhoto}
+            onUpdateUserInfo={handleUpdateUserInfo}
           />
         );
       case UserRole.SELLER:
@@ -312,7 +303,7 @@ function App() {
             onUpdateOrderStatus={handleUpdateOrderStatus}
             onUpdateSellerStatus={handleUpdateSellerStatus}
             onUpdateSellerInfo={handleUpdateSellerInfo}
-            onUpdateSellerPhoto={handleUpdateSellerPhoto}
+            onUpdateSellerPhoto={handleUpdateUserPhoto}
           />
         );
       case UserRole.MANAGER:

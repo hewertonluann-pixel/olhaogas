@@ -1,7 +1,3 @@
-// AVISO: A aplicação agora utiliza o Firebase Firestore como fonte de dados.
-// Este arquivo não é mais usado em tempo de execução e serve apenas como
-// referência ou para popular o banco de dados pela primeira vez ("seeding").
-
 import { User, SellerProfile, Order, UserRole, SellerStatus, OrderStatus } from './types';
 
 export const COMMISSION_RATE = 0.05; // 5% de comissão sobre cada venda

@@ -95,3 +95,14 @@ export interface NewSellerFormData {
     water: number;
   };
 }
+
+export interface UserProfileFormData {
+  name: string;
+  email: string;
+  phone: string;
+  address: {
+    street: string;
+    number: string;
+    neighborhood: string;
+  };
+}
