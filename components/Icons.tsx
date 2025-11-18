@@ -15,12 +15,12 @@ export const LogoutIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export const GasIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-        <g fill="#EF4444">
+        <g fill="#9CA3AF">
             <path d="M12 56h40v6H12z" />
             <path d="M12 22c0-4.4 3.6-8 8-8h24c4.4 0 8 3.6 8 8v34H12V22z" />
             <path d="M20 4h24v10H20z" />
         </g>
-        <path fill="#DC2626" d="M12 36h40v6H12z" />
+        <path fill="#6B7280" d="M12 36h40v6H12z" />
         <path fill="#4A5568" d="M26 8h12v8H26z" />
     </svg>
 );
