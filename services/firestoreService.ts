@@ -1,13 +1,16 @@
-
-import { firebaseConfig } from '../firebaseConfig';
+import { db } from '../firebaseConfig';
 import { UserRole } from '../types';
-
-// Declaração para o compilador TypeScript saber que 'firebase' existe no escopo global
-declare const firebase: any;
-
-// --- Inicialização do Firebase ---
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore(app);
+import { 
+    collection, 
+    onSnapshot, 
+    doc, 
+    updateDoc, 
+    addDoc, 
+    deleteDoc, 
+    setDoc, 
+    getDocs,
+    query
+} from "firebase/firestore";
 
 // --- Funções Genéricas ---
 
@@ -18,10 +21,11 @@ const db = firebase.firestore(app);
  * @returns A função para parar de escutar (unsubscribe).
  */
 export const onCollectionUpdate = <T>(collectionName: string, callback: (data: T[]) => void): (() => void) => {
-  return db.collection(collectionName).onSnapshot((querySnapshot: any) => {
+  const colRef = collection(db, collectionName);
+  return onSnapshot(colRef, (querySnapshot) => {
     const data: T[] = [];
-    querySnapshot.forEach((doc: any) => {
-      data.push({ id: doc.id, ...doc.data() } as unknown as T);
+    querySnapshot.forEach((document) => {
+      data.push({ id: document.id, ...document.data() } as unknown as T);
     });
     callback(data);
   });
@@ -34,8 +38,8 @@ export const onCollectionUpdate = <T>(collectionName: string, callback: (data: T
  * @param data O objeto com os campos a serem atualizados.
  */
 export const updateDocument = async (collectionName: string, docId: string, data: object): Promise<void> => {
-  const docRef = db.collection(collectionName).doc(docId);
-  await docRef.update(data);
+  const docRef = doc(db, collectionName, docId);
+  await updateDoc(docRef, data);
 };
 
 /**
@@ -45,7 +49,8 @@ export const updateDocument = async (collectionName: string, docId: string, data
  * @returns O documento adicionado com seu ID.
  */
 export const addDocument = async <T>(collectionName: string, data: T): Promise<T & { id: string }> => {
-    const docRef = await db.collection(collectionName).add(data);
+    const colRef = collection(db, collectionName);
+    const docRef = await addDoc(colRef, data);
     return { id: docRef.id, ...data };
 };
 
@@ -55,7 +60,8 @@ export const addDocument = async <T>(collectionName: string, data: T): Promise<T
  * @param docId O ID do documento a ser removido.
  */
 export const removeDocument = async (collectionName: string, docId: string): Promise<void> => {
-    await db.collection(collectionName).doc(docId).delete();
+    const docRef = doc(db, collectionName, docId);
+    await deleteDoc(docRef);
 };
 
 /**
@@ -65,7 +71,8 @@ export const removeDocument = async (collectionName: string, docId: string): Pro
  * @param data O objeto com os dados do documento.
  */
 export const setDocument = async (collectionName: string, docId: string, data: object): Promise<void> => {
-  await db.collection(collectionName).doc(docId).set(data);
+  const docRef = doc(db, collectionName, docId);
+  await setDoc(docRef, data);
 };
 
 
@@ -73,10 +80,12 @@ export const setDocument = async (collectionName: string, docId: string, data: o
 
 // Para o login, precisamos buscar todos os usuários de uma vez
 export const getAllUsers = async () => {
-    const querySnapshot = await db.collection('users').get();
+    const colRef = collection(db, 'users');
+    const q = query(colRef);
+    const querySnapshot = await getDocs(q);
     const users: any[] = [];
-    querySnapshot.forEach((doc: any) => {
-        users.push({ id: doc.id, ...doc.data() });
+    querySnapshot.forEach((document) => {
+        users.push({ id: document.id, ...document.data() });
     });
     return users;
 }
