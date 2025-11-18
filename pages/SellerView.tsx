@@ -92,7 +92,7 @@ interface SellerViewProps {
       brands: { gas: string; water: string };
     }
   ) => void;
-  onUpdateSellerPhoto: (sellerId: string) => void;
+  onUpdateSellerPhoto: (sellerId: string, photoFile: File) => void;
 }
 
 const OrderCard: React.FC<{ order: Order; client?: User; onUpdate: (order: Order, status: OrderStatus) => void }> = ({ order, client, onUpdate }) => {
@@ -158,9 +158,13 @@ const SellerView: React.FC<SellerViewProps> = ({ seller, orders, users, announce
     const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false);
     const [announcementToView, setAnnouncementToView] = useState<Announcement | null>(null);
     const [orderToUpdate, setOrderToUpdate] = useState<Order | null>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     const pendingOrders = orders.filter(o => o.status === OrderStatus.PENDING);
     const prevPendingOrdersCount = useRef(pendingOrders.length);
+    
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         const currentPendingCount = orders.filter(o => o.status === OrderStatus.PENDING).length;
@@ -236,6 +240,33 @@ const SellerView: React.FC<SellerViewProps> = ({ seller, orders, users, announce
         setIsInfoModalOpen(false);
     }
     
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setSelectedFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    
+    const handlePhotoUpdate = () => {
+        if (selectedFile) {
+            onUpdateSellerPhoto(seller.id, selectedFile);
+            setIsPhotoChangeModalOpen(false);
+            setSelectedFile(null);
+            setPreviewUrl(null);
+        }
+    };
+    
+    const openPhotoModal = () => {
+        setSelectedFile(null);
+        setPreviewUrl(null);
+        setIsPhotoChangeModalOpen(true);
+    }
+
   return (
     <div>
       {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage(null)} />}
@@ -255,7 +286,7 @@ const SellerView: React.FC<SellerViewProps> = ({ seller, orders, users, announce
                     <div className="relative flex-shrink-0 mr-5">
                         <img className="w-24 h-24 rounded-full object-cover" src={seller.photoUrl} alt={seller.name} />
                         <button
-                            onClick={() => setIsPhotoChangeModalOpen(true)}
+                            onClick={openPhotoModal}
                             className="absolute -bottom-1 -right-1 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500"
                             aria-label="Alterar foto de perfil"
                         >
@@ -427,22 +458,38 @@ const SellerView: React.FC<SellerViewProps> = ({ seller, orders, users, announce
 
       <Modal isOpen={isPhotoChangeModalOpen} onClose={() => setIsPhotoChangeModalOpen(false)} title="Alterar Foto de Perfil">
         <div>
-            <p className="text-gray-700 mb-2">Deseja alterar sua foto de perfil?</p>
-            <p className="text-sm text-gray-500">Uma nova imagem aleatória será gerada para o seu perfil.</p>
-            <div className="mt-6 flex justify-end space-x-3">
-                <button onClick={() => setIsPhotoChangeModalOpen(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
-                    Cancelar
-                </button>
-                <button 
-                    onClick={() => {
-                        onUpdateSellerPhoto(seller.id);
-                        setIsPhotoChangeModalOpen(false);
-                    }} 
-                    className="px-4 py-2 bg-cyan-600 text-white font-semibold rounded-md hover:bg-cyan-700"
-                >
-                    Alterar Foto
-                </button>
-            </div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
+          />
+          <div 
+            className="w-full h-48 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-center cursor-pointer hover:bg-gray-200"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {previewUrl ? (
+              <img src={previewUrl} alt="Pré-visualização" className="h-full w-full object-cover rounded-lg" />
+            ) : (
+              <p className="text-gray-500">Clique para selecionar uma imagem</p>
+            )}
+          </div>
+          <div className="mt-6 flex justify-end space-x-3">
+            <button
+              onClick={() => setIsPhotoChangeModalOpen(false)}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handlePhotoUpdate}
+              disabled={!selectedFile}
+              className="px-4 py-2 bg-cyan-600 text-white font-semibold rounded-md hover:bg-cyan-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              Salvar Nova Foto
+            </button>
+          </div>
         </div>
       </Modal>
 

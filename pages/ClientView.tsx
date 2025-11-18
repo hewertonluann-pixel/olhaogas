@@ -1,10 +1,10 @@
 
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { User, SellerProfile, Order, OrderStatus, PaymentMethod, Announcement, AnnouncementTarget } from '../types';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { User, SellerProfile, Order, OrderStatus, PaymentMethod, Announcement, AnnouncementTarget, UserProfileFormData } from '../types';
 import Header from '../components/Header';
 import Modal from '../components/Modal';
-import { GasIcon, WaterIcon, StarIcon, PixIcon, CreditCardIcon, CheckCircleIcon, QrCodeIcon, BellIcon } from '../components/Icons';
+import { GasIcon, WaterIcon, StarIcon, PixIcon, CreditCardIcon, CheckCircleIcon, QrCodeIcon, BellIcon, PencilIcon } from '../components/Icons';
 
 interface ClientViewProps {
   user: User;
@@ -15,6 +15,8 @@ interface ClientViewProps {
   onPlaceOrder: (seller: SellerProfile, gasQuantity: number, waterQuantity: number, paymentMethod: PaymentMethod) => void;
   onRateOrder: (orderId: string, rating: number, comment: string) => void;
   onRegisterSeller: (registrationData: { phone: string; gasBrand: string; waterBrand: string; }) => void;
+  onUpdatePhoto: (userId: string, photoFile: File) => void;
+  onUpdateUserInfo: (userId: string, formData: UserProfileFormData) => void;
 }
 
 const AnnouncementBanner: React.FC<{ announcement: Announcement; onDismiss: () => void; onClick: () => void; }> = ({ announcement, onDismiss, onClick }) => (
@@ -35,7 +37,8 @@ const AnnouncementBanner: React.FC<{ announcement: Announcement; onDismiss: () =
 const StarRating: React.FC<{ rating: number, count?: number }> = ({ rating, count }) => {
     return (
         <div className="flex items-center">
-            {[...Array(5)].map((_, i) => (
+            {/* Fix: Changed [...Array(5)] to Array.from({ length: 5 }) to prevent potential iterator errors. */}
+            {Array.from({ length: 5 }).map((_, i) => (
                 <StarIcon key={i} className={`w-5 h-5 ${i < Math.round(rating) ? 'text-yellow-400' : 'text-gray-300'}`} />
             ))}
             {count !== undefined && <span className="text-sm text-gray-600 ml-2">({count} {count === 1 ? 'avaliação' : 'avaliações'})</span>}
@@ -161,7 +164,8 @@ const OrderItem: React.FC<{ order: Order; seller?: SellerProfile, onRate: (order
                 {order.rating && (
                     <div className="mt-2 flex items-center">
                         <span className="text-sm text-gray-600 mr-2">Sua avaliação:</span>
-                        {[...Array(5)].map((_, i) => (
+                        {/* Fix: Changed [...Array(5)] to Array.from({ length: 5 }) to prevent potential iterator errors. */}
+                        {Array.from({ length: 5 }).map((_, i) => (
                             <StarIcon key={i} className={`w-4 h-4 ${i < order.rating! ? 'text-yellow-400' : 'text-gray-300'}`} />
                         ))}
                     </div>
@@ -172,7 +176,7 @@ const OrderItem: React.FC<{ order: Order; seller?: SellerProfile, onRate: (order
 };
 
 
-const ClientView: React.FC<ClientViewProps> = ({ user, sellers, orders, announcements, onLogout, onPlaceOrder, onRateOrder, onRegisterSeller }) => {
+const ClientView: React.FC<ClientViewProps> = ({ user, sellers, orders, announcements, onLogout, onPlaceOrder, onRateOrder, onRegisterSeller, onUpdatePhoto, onUpdateUserInfo }) => {
   const [activeTab, setActiveTab] = useState('sellers');
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
@@ -187,6 +191,14 @@ const ClientView: React.FC<ClientViewProps> = ({ user, sellers, orders, announce
   const [registrationPhone, setRegistrationPhone] = useState(user.phone || '');
   const [registrationGasBrand, setRegistrationGasBrand] = useState('');
   const [registrationWaterBrand, setRegistrationWaterBrand] = useState('');
+
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editFormData, setEditFormData] = useState<UserProfileFormData | null>(null);
 
   useEffect(() => {
     const latestClientAnnouncement = announcements.find(ann => ann.target === AnnouncementTarget.CLIENTS);
@@ -229,20 +241,17 @@ const ClientView: React.FC<ClientViewProps> = ({ user, sellers, orders, announce
   const [currentRating, setCurrentRating] = useState(0);
   const [comment, setComment] = useState('');
   
-  // FIX: Explicitly typing the `reduce` accumulator ensures that TypeScript
-  // correctly infers the resulting type, preventing downstream iterator errors.
   const sellersByNeighborhood = useMemo(() => {
-    // FIX: The initial value for `reduce` must be typed. Casting the empty
-    // object `{}` to the correct type allows TypeScript to infer the return
-    // type of `reduce` correctly and avoids an iterator error.
-    return sellers.reduce((acc: Record<string, SellerProfile[]>, seller) => {
+    // FIX: Explicitly added a generic type to `reduce` to ensure correct return type inference from TypeScript.
+    // This prevents the return value from being inferred as `unknown`, which caused the iterator error.
+    return sellers.reduce<Record<string, SellerProfile[]>>((acc, seller) => {
       const neighborhood = seller.address.neighborhood;
       if (!acc[neighborhood]) {
         acc[neighborhood] = [];
       }
       acc[neighborhood].push(seller);
       return acc;
-    }, {} as Record<string, SellerProfile[]>);
+    }, {});
   }, [sellers]);
 
   const handleOrderClick = (seller: SellerProfile, gasQuantity: number, waterQuantity: number) => {
@@ -283,6 +292,76 @@ const ClientView: React.FC<ClientViewProps> = ({ user, sellers, orders, announce
     }
     setIsRatingModalOpen(false);
   }
+  
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        setSelectedFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreviewUrl(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+    }
+  };
+
+  const handlePhotoUpdate = () => {
+      if (selectedFile) {
+          onUpdatePhoto(user.id, selectedFile);
+          setIsPhotoModalOpen(false);
+          setSelectedFile(null);
+          setPreviewUrl(null);
+      }
+  };
+  
+  const openPhotoModal = () => {
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      setIsPhotoModalOpen(true);
+  }
+
+  const handleOpenEditModal = () => {
+    setEditFormData({
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      address: {
+        street: user.address.street,
+        number: user.address.number,
+        neighborhood: user.address.neighborhood,
+      },
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (!editFormData) return;
+
+    if (name.startsWith('address.')) {
+        const key = name.split('.')[1] as keyof UserProfileFormData['address'];
+        setEditFormData(prev => ({
+            ...prev!,
+            address: {
+                ...prev!.address,
+                [key]: value
+            }
+        }));
+    } else {
+        setEditFormData(prev => ({
+            ...prev!,
+            [name]: value
+        }));
+    }
+  };
+
+  const handleUpdateInfoSubmit = () => {
+    if (editFormData) {
+        onUpdateUserInfo(user.id, editFormData);
+        setIsEditModalOpen(false);
+    }
+  };
+
 
   const TabButton: React.FC<{tabName: string; label: string}> = ({ tabName, label }) => (
     <button
@@ -309,6 +388,7 @@ const ClientView: React.FC<ClientViewProps> = ({ user, sellers, orders, announce
             <nav className="-mb-px flex space-x-4 sm:space-x-8" aria-label="Tabs">
                 <TabButton tabName="sellers" label="Vendedores"/>
                 <TabButton tabName="orders" label="Meus Pedidos"/>
+                <TabButton tabName="profile" label="Meu Perfil"/>
             </nav>
         </div>
 
@@ -343,6 +423,47 @@ const ClientView: React.FC<ClientViewProps> = ({ user, sellers, orders, announce
             </div>
           </div>
         )}
+
+        {activeTab === 'profile' && (
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">Meu Perfil</h2>
+            <div className="bg-white p-6 rounded-xl shadow-lg max-w-2xl mx-auto">
+              <div className="flex flex-col sm:flex-row items-center">
+                <div className="relative flex-shrink-0 mb-4 sm:mb-0 sm:mr-6">
+                  <img className="w-32 h-32 rounded-full object-cover border-4 border-gray-200" src={user.photoUrl} alt={user.name} />
+                  <button
+                    onClick={openPhotoModal}
+                    className="absolute -bottom-1 -right-1 bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    aria-label="Alterar foto de perfil"
+                  >
+                    <PencilIcon className="w-5 h-5 text-gray-600" />
+                  </button>
+                </div>
+                <div className="text-center sm:text-left w-full">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="text-2xl font-bold text-gray-800">{user.name}</h3>
+                      <p className="text-gray-600">{user.email}</p>
+                      <p className="text-gray-600">{user.phone}</p>
+                      <p className="mt-2 text-sm text-gray-500">
+                        {user.address.street}, {user.address.number}<br/>
+                        {user.address.neighborhood}, {user.address.city} - {user.address.state}
+                      </p>
+                    </div>
+                     <button 
+                        onClick={handleOpenEditModal}
+                        className="p-2 text-gray-500 hover:text-cyan-600 hover:bg-cyan-100 rounded-full focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                        aria-label="Editar perfil"
+                      >
+                        <PencilIcon className="w-5 h-5" />
+                      </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
 
         <div className="bg-white p-4 rounded-lg shadow-sm mt-12 flex flex-col sm:flex-row justify-between items-center">
             <p className="text-gray-700 font-medium mb-2 sm:mb-0">Quer aumentar suas vendas? Venda gás e água em nossa plataforma!</p>
@@ -461,7 +582,8 @@ const ClientView: React.FC<ClientViewProps> = ({ user, sellers, orders, announce
                     <div className="mb-4">
                         <label className="font-semibold text-gray-700">Sua Avaliação:</label>
                         <div className="flex justify-center items-center my-3 space-x-2">
-                             {[...Array(5)].map((_, i) => {
+                             {/* Fix: Changed [...Array(5)] to Array.from({ length: 5 }) to fix iterator error. */}
+                             {Array.from({ length: 5 }).map((_, i) => {
                                 const ratingValue = i + 1;
                                 return (
                                     <button key={ratingValue} onClick={() => setCurrentRating(ratingValue)}>
@@ -532,6 +654,92 @@ const ClientView: React.FC<ClientViewProps> = ({ user, sellers, orders, announce
                 </div>
             </div>
         </Modal>
+
+      <Modal isOpen={isPhotoModalOpen} onClose={() => setIsPhotoModalOpen(false)} title="Alterar Foto de Perfil">
+        <div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
+          />
+          <div 
+            className="w-full h-48 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-center cursor-pointer hover:bg-gray-200"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {previewUrl ? (
+              <img src={previewUrl} alt="Pré-visualização" className="h-full w-full object-cover rounded-lg" />
+            ) : (
+              <p className="text-gray-500">Clique para selecionar uma imagem</p>
+            )}
+          </div>
+          <div className="mt-6 flex justify-end space-x-3">
+            <button
+              onClick={() => setIsPhotoModalOpen(false)}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handlePhotoUpdate}
+              disabled={!selectedFile}
+              className="px-4 py-2 bg-cyan-600 text-white font-semibold rounded-md hover:bg-cyan-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              Salvar Nova Foto
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title="Editar Perfil">
+        {editFormData && (
+          <div>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nome Completo</label>
+                <input type="text" name="name" id="name" value={editFormData.name} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500" />
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" name="email" id="email" value={editFormData.email} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500" />
+              </div>
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Telefone</label>
+                <input type="tel" name="phone" id="phone" value={editFormData.phone} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500" />
+              </div>
+              <div className="border-t pt-4">
+                <h4 className="text-md font-semibold text-gray-700">Endereço</h4>
+                <div className="mt-2 space-y-4">
+                  <div>
+                    <label htmlFor="street" className="block text-sm font-medium text-gray-700">Rua</label>
+                    <input type="text" name="address.street" id="street" value={editFormData.address.street} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="number" className="block text-sm font-medium text-gray-700">Número</label>
+                      <input type="text" name="address.number" id="number" value={editFormData.address.number} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500" />
+                    </div>
+                    <div>
+                      <label htmlFor="neighborhood" className="block text-sm font-medium text-gray-700">Bairro</label>
+                      <input type="text" name="address.neighborhood" id="neighborhood" value={editFormData.address.neighborhood} onChange={handleFormChange} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-cyan-500 focus:ring-cyan-500" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end space-x-3">
+              <button onClick={() => setIsEditModalOpen(false)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
+                Cancelar
+              </button>
+              <button onClick={handleUpdateInfoSubmit} className="px-4 py-2 bg-cyan-600 text-white font-semibold rounded-md hover:bg-cyan-700">
+                Salvar Alterações
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
     </div>
   );
 };
