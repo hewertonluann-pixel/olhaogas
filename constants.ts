@@ -2,6 +2,15 @@ import { User, SellerProfile, Order, UserRole, SellerStatus, OrderStatus } from 
 
 export const COMMISSION_RATE = 0.05; // 5% de comissão sobre cada venda
 
+/**
+ * IDs dos produtos no catálogo Stripe.
+ * Atualize com os Price IDs reais após cadastrar no Stripe Dashboard.
+ * Gás 13kg já cadastrado: https://dashboard.stripe.com (produto "Gás - 13kg", R$ 120,00)
+ * TODO: cadastrar "Água 20L" no Stripe Dashboard e preencher STRIPE_PRICE_WATER.
+ */
+export const STRIPE_PRICE_GAS   = 'price_SUBSTITUA_PELO_ID_REAL'; // Gás - 13kg (R$ 120,00)
+export const STRIPE_PRICE_WATER = 'price_SUBSTITUA_PELO_ID_REAL'; // Água 20L — cadastrar no Stripe
+
 export const USERS: User[] = [
   {
     id: 'user-1',
@@ -36,7 +45,12 @@ export const SELLERS: SellerProfile[] = [
       state: 'SP',
     },
     brands: { gas: 'Supergás', water: 'Crystal' },
-    prices: { gas: 110.50, water: 8.50 },
+    prices: { gas: 120.00, water: 8.50 },
+    stripePriceIds: {
+      gas: STRIPE_PRICE_GAS,
+      water: STRIPE_PRICE_WATER,
+    },
+    // stripeAccountId: 'acct_xxx', // preenchido automaticamente após onboarding Connect
     status: SellerStatus.ONLINE,
     approved: true,
     rating: { average: 4.8, count: 25 },
@@ -56,12 +70,16 @@ export const SELLERS: SellerProfile[] = [
       state: 'SP',
     },
     brands: { gas: 'Ultragaz', water: 'Minalba' },
-    prices: { gas: 108.00, water: 8.00 },
+    prices: { gas: 120.00, water: 8.00 },
+    stripePriceIds: {
+      gas: STRIPE_PRICE_GAS,
+      water: STRIPE_PRICE_WATER,
+    },
     status: SellerStatus.OFFLINE,
     approved: true,
     rating: { average: 4.5, count: 18 },
   },
-    {
+  {
     id: 'seller-4',
     name: 'Entrega Veloz',
     email: 'veloz@example.com',
@@ -76,7 +94,11 @@ export const SELLERS: SellerProfile[] = [
       state: 'SP',
     },
     brands: { gas: 'Copagaz', water: 'Bonafont' },
-    prices: { gas: 115.00, water: 9.00 },
+    prices: { gas: 120.00, water: 9.00 },
+    stripePriceIds: {
+      gas: STRIPE_PRICE_GAS,
+      water: STRIPE_PRICE_WATER,
+    },
     status: SellerStatus.ONLINE,
     approved: true,
     rating: { average: 4.9, count: 42 },
@@ -96,7 +118,11 @@ export const SELLERS: SellerProfile[] = [
       state: 'SP',
     },
     brands: { gas: 'Nacional Gás', water: 'Schin' },
-    prices: { gas: 112.75, water: 8.75 },
+    prices: { gas: 120.00, water: 8.75 },
+    stripePriceIds: {
+      gas: STRIPE_PRICE_GAS,
+      water: STRIPE_PRICE_WATER,
+    },
     status: SellerStatus.ONLINE,
     approved: false,
     rating: { average: 0, count: 0 },

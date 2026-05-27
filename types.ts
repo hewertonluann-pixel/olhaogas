@@ -47,6 +47,20 @@ export interface SellerProfile extends User {
     gas: number;
     water: number;
   };
+  /**
+   * IDs de preço do catálogo Stripe (price_xxx).
+   * Usado para referenciar o valor oficial ao criar PaymentIntents.
+   * Preencher após cadastrar os produtos no Stripe Dashboard.
+   */
+  stripePriceIds?: {
+    gas?: string;   // ex: "price_1Abc..." — Gás 13kg
+    water?: string; // ex: "price_1Xyz..." — Água 20L
+  };
+  /**
+   * ID da conta Stripe Connect Express do vendedor (acct_xxx).
+   * Gerado automaticamente no onboarding via Cloud Function createSellerStripeAccount.
+   */
+  stripeAccountId?: string;
   status: SellerStatus;
   approved: boolean;
   rating: {
