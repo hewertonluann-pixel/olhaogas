@@ -4,12 +4,11 @@ export const COMMISSION_RATE = 0.05; // 5% de comissão sobre cada venda
 
 /**
  * IDs dos produtos no catálogo Stripe.
- * Atualize com os Price IDs reais após cadastrar no Stripe Dashboard.
- * Gás 13kg já cadastrado: https://dashboard.stripe.com (produto "Gás - 13kg", R$ 120,00)
- * TODO: cadastrar "Água 20L" no Stripe Dashboard e preencher STRIPE_PRICE_WATER.
+ * Gás - 13kg:  price_1TAxTkJ2xBR0EGNTpAsGi9Sz
+ * Água 20L:    price_1Tbn8RJ2xBR0EGNTEBlZoa3l
  */
-export const STRIPE_PRICE_GAS   = 'price_SUBSTITUA_PELO_ID_REAL'; // Gás - 13kg (R$ 120,00)
-export const STRIPE_PRICE_WATER = 'price_SUBSTITUA_PELO_ID_REAL'; // Água 20L — cadastrar no Stripe
+export const STRIPE_PRICE_GAS   = 'price_1TAxTkJ2xBR0EGNTpAsGi9Sz'; // Gás - 13kg (R$ 120,00)
+export const STRIPE_PRICE_WATER = 'price_1Tbn8RJ2xBR0EGNTEBlZoa3l'; // Água 20L
 
 export const USERS: User[] = [
   {
@@ -50,7 +49,6 @@ export const SELLERS: SellerProfile[] = [
       gas: STRIPE_PRICE_GAS,
       water: STRIPE_PRICE_WATER,
     },
-    // stripeAccountId: 'acct_xxx', // preenchido automaticamente após onboarding Connect
     status: SellerStatus.ONLINE,
     approved: true,
     rating: { average: 4.8, count: 25 },
